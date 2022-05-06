@@ -7,7 +7,7 @@ This is a starter project that you can use as a [NestJS](https://github.com/nest
 - Clone the repo
 
 ```bash
-$ git clone
+$ git clone git@github.com:OsidAbu-alrub/nestjs-prisma-template.git
 ```
 
 - Change origin url to point to your own repo
