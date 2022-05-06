@@ -32,3 +32,6 @@ $ yarn dev
 ## Testing
 
 Coming Soon!
+
+## TODOS
+- Add [global error filtering](https://docs.nestjs.com/exception-filters)
