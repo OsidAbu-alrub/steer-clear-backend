@@ -7,7 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model product {
+model Product {
   productId Int    @id @default(autoincrement())
   name      String @db.VarChar(255)
+
+  // To make sure generated type is "Product" not "product"
+  // we map this model to the corresponding table
+  // and name the model what we want
+  @@map("product")
 }
