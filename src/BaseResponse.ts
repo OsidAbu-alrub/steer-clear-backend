@@ -9,3 +9,5 @@ export type ValidationResponse = {
   message: string
   statusCode: HttpStatus
 }
+
+export type AsyncBaseResponse<T> = Promise<BaseResponse<T>>

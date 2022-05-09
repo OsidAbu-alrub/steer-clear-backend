@@ -8,7 +8,7 @@ import {
   Post,
 } from "@nestjs/common"
 import { Product } from "@prisma/client"
-import BaseResponse, { ValidationResponse } from "src/BaseResponse"
+import { AsyncBaseResponse, ValidationResponse } from "src/BaseResponse"
 import { ProductService } from "./product.service"
 
 @Controller("product")
@@ -24,7 +24,7 @@ export class ProductController {
   @Post("add")
   async addProduct(
     @Body("name") productName: Product["name"],
-  ): Promise<BaseResponse<Product["productId"]>> {
+  ): AsyncBaseResponse<Product["productId"]> {
     const createdProductId = await this.productService.createProduct(
       productName,
     )
@@ -43,7 +43,7 @@ export class ProductController {
    * @returns products - All the products in the database
    */
   @Get("all")
-  async getAllProducts(): Promise<BaseResponse<Product[]>> {
+  async getAllProducts(): AsyncBaseResponse<Product[]> {
     const products = await this.productService.getAllProducts()
     return {
       validation: {
@@ -63,7 +63,7 @@ export class ProductController {
   @Get(":id")
   async findProduct(
     @Param("id") productId: string,
-  ): Promise<BaseResponse<Product>> {
+  ): AsyncBaseResponse<Product> {
     try {
       const product = await this.productService.findProduct(+productId)
       return {
