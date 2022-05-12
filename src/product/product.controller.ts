@@ -1,14 +1,6 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpException,
-  HttpStatus,
-  Param,
-  Post,
-} from "@nestjs/common"
-import { Product } from "@prisma/client"
-import { AsyncBaseResponse, ValidationResponse } from "src/BaseResponse"
+import { Body, Controller, Get, HttpStatus, Param, Post } from "@nestjs/common"
+import { AsyncBaseResponse } from "src/global/BaseResponse"
+import ProductDto from "./product.dto"
 import { ProductService } from "./product.service"
 
 @Controller("product")
@@ -23,8 +15,8 @@ export class ProductController {
    */
   @Post("add")
   async addProduct(
-    @Body("name") productName: Product["name"],
-  ): AsyncBaseResponse<Product["productId"]> {
+    @Body("name") productName: ProductDto["productName"],
+  ): AsyncBaseResponse<string> {
     const createdProductId = await this.productService.createProduct(
       productName,
     )
@@ -43,7 +35,7 @@ export class ProductController {
    * @returns products - All the products in the database
    */
   @Get("all")
-  async getAllProducts(): AsyncBaseResponse<Product[]> {
+  async getAllProducts(): AsyncBaseResponse<ProductDto[]> {
     const products = await this.productService.getAllProducts()
     return {
       validation: {
@@ -63,22 +55,14 @@ export class ProductController {
   @Get(":id")
   async findProduct(
     @Param("id") productId: string,
-  ): AsyncBaseResponse<Product> {
-    try {
-      const product = await this.productService.findProduct(+productId)
-      return {
-        validation: {
-          message: "",
-          statusCode: HttpStatus.OK,
-        },
-        data: product,
-      }
-    } catch (e: unknown) {
-      const error = e as HttpException
-      return {
-        validation: { ...(error.getResponse() as ValidationResponse) },
-        data: null,
-      }
+  ): AsyncBaseResponse<ProductDto> {
+    const product = await this.productService.findProduct(productId)
+    return {
+      validation: {
+        message: "",
+        statusCode: HttpStatus.OK,
+      },
+      data: product,
     }
   }
 }
