@@ -29,6 +29,18 @@ $ yarn install
 $ yarn dev
 ```
 
+## Resource directory structure
+
+- resource
+  <br/>
+  -- resource.contract.ts => interface that contains methods that should be implemented in the resource.service file <br/>
+  -- resource.controller.ts <br/>
+  -- resource.dto.ts <br/>
+  -- resource.module.ts <br/>
+  -- resource.service.ts => must implement IMapper & resource.contract interface <br/>
+
+**P.S. You get models from prisma client after generating database**
+
 ## Resource generation
 
 you can find how to generate nestjs resources [here](https://docs.nestjs.com/cli/usages#:~:text=nest%20generate%20%3Cschematic%3E%20%3Cname%3E%20%5Boptions%5D)
@@ -41,3 +53,4 @@ Coming Soon!
 
 - Add [global error filtering](https://docs.nestjs.com/exception-filters)
 - Add ability to generate folder with module, service, controller, dto, service contract (interface) on the go
+- Add documentation for db generation commands
