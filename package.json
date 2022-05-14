@@ -1,5 +1,5 @@
 {
-  "name": "nestjs-prisma-template",
+  "name": "steer-clear-backend",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -63,4 +63,5 @@
       "yarn lint"
     ]
   }
+
 }
