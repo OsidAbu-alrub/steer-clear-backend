@@ -7,12 +7,76 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Product {
-  productId Int    @id @default(autoincrement())
-  name      String @db.VarChar(255)
+model User {
+  id          String        @id @default(uuid())
+  firstName   String        @map("first_name")
+  lastName    String        @map("last_name")
+  phoneNumber String        @map("phone_number")
+  email       String
+  password    String
+  bio         String
+  posts       Post[]
+  comments    PostComment[]
+  likedPosts  PostLike[]
 
-  // To make sure generated type is "Product" not "product"
-  // we map this model to the corresponding table
-  // and name the model what we want
-  @@map("product")
+  @@map("user")
+}
+
+model Post {
+  id         String        @id @default(uuid())
+  userId     String        @map("user_id")
+  title      String
+  body       String
+  createdOn  DateTime      @default(now()) @map("created_on")
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categories PostCategory?
+  comments   PostComment[]
+  likes      PostLike[]
+
+  @@index([userId], map: "post_user_id_fkey")
+  @@map("post")
+}
+
+model PostComment {
+  userId    String   @map("user_id")
+  postId    String   @map("post_id")
+  body      String
+  createdOn DateTime @default(now()) @map("created_on")
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+  @@index([postId], map: "post_comment_post_id_fkey")
+  @@map("post_comment")
+}
+
+model Category {
+  id          String         @id @default(uuid())
+  title       String         @unique
+  description String
+  posts       PostCategory[]
+
+  @@map("category")
+}
+
+model PostCategory {
+  categoryId String   @map("category_id")
+  postId     String   @unique @map("post_id")
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([categoryId, postId])
+  @@map("post_category")
+}
+
+model PostLike {
+  userId  String   @map("user_id")
+  postId  String   @map("post_id")
+  likedAt DateTime @default(now()) @map("liked_at")
+  post    Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+  @@index([postId], map: "post_like_post_id_fkey")
+  @@map("post_like")
 }
