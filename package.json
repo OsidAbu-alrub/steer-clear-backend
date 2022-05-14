@@ -15,8 +15,8 @@
     "prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "g:mod": "npx nest g mo",
-    "g:ser": "npx nest g s --no-spec",
-    "g:con": "npx nest g co $0 --no-spec",
+    "g:ser": "npx nest g s",
+    "g:con": "npx nest g co",
     "postinstall": "husky install"
   },
   "dependencies": {
@@ -63,5 +63,4 @@
       "yarn lint"
     ]
   }
-
 }
