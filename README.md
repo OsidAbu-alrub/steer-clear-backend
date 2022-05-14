@@ -1,3 +1,14 @@
+## Naming Convetions
+
+### Database
+
+|       -       |                                                             |
+| :-----------: | :---------------------------------------------------------: |
+| database name |        lowercase with words separated by underscores        |
+|  table name   | lowercase with words separated by underscores<br>(singular) |
+|  properties   |        lowercase with words separated by underscores        |
+| foriegn keys  |                   tableName_propertyName                    |
+
 ## Description
 
 This is a starter project that you can use as a [NestJS](https://github.com/nestjs/nest) template with [Prisma](https://www.prisma.io/docs/)
@@ -45,6 +56,34 @@ This structure must come under the src directory:
 ## Resource generation
 
 you can find how to generate nestjs resources [here](https://docs.nestjs.com/cli/usages#:~:text=nest%20generate%20%3Cschematic%3E%20%3Cname%3E%20%5Boptions%5D)
+
+## Dealing with database
+
+```bash
+# Create migrations from your Prisma schema, apply them to the database, generate artifacts (e.g. Prisma Client)
+$ npx prisma migrate dev --name init
+```
+
+```bash
+# Pull the schema from an existing database, updating the Prisma schema
+$ npx prisma db pull
+```
+
+```bash
+# Push the Prisma schema state to the database
+$ npx prisma db push
+```
+
+## Generate prsima client
+
+```bash
+$ npx prisma generate
+```
+
+**reload developer window if you are using vscode to access prisma client**
+
+**For more info you could check prisma docs [here](https://www.prisma.io/docs/getting-started/quickstart)**
+<br/>
 
 ## Testing
 
