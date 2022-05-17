@@ -11,6 +11,9 @@ async function bootstrap() {
   app.setGlobalPrefix("api/v1")
   app.use(helmet())
   app.useGlobalFilters(new HttpExceptionFilter())
+  app.enableCors({
+    origin: "*",
+  })
 
   // comment out these two lines if you don't want
   // to connect to a database

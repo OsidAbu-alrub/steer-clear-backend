@@ -17,3 +17,8 @@ export type CreateUserDto = {
   password: string
   bio: string
 }
+
+export type UserLoginDto = {
+  email: string
+  password: string
+}

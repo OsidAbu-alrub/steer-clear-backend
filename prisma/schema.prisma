@@ -12,7 +12,7 @@ model User {
   firstName   String        @map("first_name")
   lastName    String        @map("last_name")
   phoneNumber String        @map("phone_number")
-  email       String
+  email       String        @unique
   password    String
   bio         String
   posts       Post[]

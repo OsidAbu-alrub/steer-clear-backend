@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common"
-import { Post } from "@prisma/client"
+import { Post, User } from "@prisma/client"
 import { PrismaService } from "src/prisma/prisma.service"
-import { CreatePostDto, PostDto } from "./post.dto"
+import { CreatePostDto, PostDto, PostFeedDto } from "./post.dto"
 
 @Injectable()
 export class PostService {
@@ -43,6 +43,20 @@ export class PostService {
     }
   }
 
+  toPostFeedDto = ({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    user: { password: _, ...user },
+    ...post
+  }: Post & {
+    user: User
+  }): PostFeedDto => {
+    const postDto = this.toPostDto(post)
+    return {
+      ...postDto,
+      user,
+    }
+  }
+
   async createPost(post: CreatePostDto) {
     const postModel = this.toModel(post)
     const createdPost = await this.prismaService.post.create({
@@ -51,5 +65,21 @@ export class PostService {
       },
     })
     return this.toPostDto(createdPost)
+  }
+
+  async getFeed(userId: string) {
+    const postsWithUsers = await this.prismaService.post.findMany({
+      where: {
+        NOT: {
+          userId: {
+            equals: userId,
+          },
+        },
+      },
+      include: {
+        user: true,
+      },
+    })
+    return postsWithUsers.map(this.toPostFeedDto)
   }
 }
