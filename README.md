@@ -49,7 +49,7 @@ This structure must come under the src directory:
   - **resource.controller.ts**
   - **resource.dto.ts**
   - **resource.module.ts**
-  - **resource.service.ts** => must implement IMapper & resource.contract interface
+  - **resource.service.ts** => must implement resource.contract interface
 
 **P.S. You get models from prisma client after generating database**
 

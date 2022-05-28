@@ -1,15 +1,12 @@
 import { HttpStatus, Injectable } from "@nestjs/common"
 import { Product } from "@prisma/client"
 import { GenericHttpException } from "src/exception/GenericHttpException"
-import IMapper from "src/global/IMapper"
 import { PrismaService } from "src/prisma/prisma.service"
 import ProductContract from "./product.contract"
 import ProductDto from "./product.dto"
 
 @Injectable()
-export class ProductService
-  implements IMapper<ProductDto, Product>, ProductContract
-{
+export class ProductService implements ProductContract {
   constructor(private readonly prismaService: PrismaService) {}
 
   toModel(dto: ProductDto): Product {
