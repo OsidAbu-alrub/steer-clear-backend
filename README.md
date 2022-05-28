@@ -46,6 +46,13 @@ This structure must come under the src directory:
 
 you can find how to generate nestjs resources [here](https://docs.nestjs.com/cli/usages#:~:text=nest%20generate%20%3Cschematic%3E%20%3Cname%3E%20%5Boptions%5D)
 
+## Prisma DB
+
+```bash
+# Generate models
+npx prisma generate
+```
+
 ## Testing
 
 Coming Soon!
