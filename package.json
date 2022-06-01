@@ -17,11 +17,11 @@
     "g:mod": "npx nest g mo",
     "g:ser": "npx nest g s",
     "g:con": "npx nest g co",
-    "prsima:generate": "npx prsima generate",
-    "prsima:migrate": "npx prsima migrate dev",
-    "prsima:deploy": "npx prsima deploy",
-    "prsima:push": "npx prsima db push",
-    "prsima:pull": "npx prsima db pull",
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:deploy": "npx prisma deploy",
+    "prisma:push": "npx prisma db push",
+    "prisma:pull": "npx prisma db pull",
     "postinstall": "husky install"
   },
   "dependencies": {
