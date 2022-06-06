@@ -1,5 +1,5 @@
 {
-  "name": "nestjs-prisma-template",
+  "name": "order-management",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -17,11 +17,12 @@
     "g:mod": "npx nest g mo",
     "g:ser": "npx nest g s",
     "g:con": "npx nest g co",
-    "prsima:generate": "npx prsima generate",
-    "prsima:migrate": "npx prsima migrate dev",
-    "prsima:deploy": "npx prsima deploy",
-    "prsima:push": "npx prsima db push",
-    "prsima:pull": "npx prsima db pull",
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:deploy": "npx prisma deploy",
+    "prisma:push": "npx prisma db push",
+    "prisma:pull": "npx prisma db pull",
+    "plop": "plop",
     "postinstall": "husky install"
   },
   "dependencies": {
@@ -53,6 +54,8 @@
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "^27.2.5",
     "lint-staged": "^12.4.1",
+    "plop": "^3.1.0",
+    "plop-action-eslint": "^0.1.0",
     "prettier": "^2.3.2",
     "source-map-support": "^0.5.20",
     "supertest": "^6.1.3",

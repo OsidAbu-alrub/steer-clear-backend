@@ -1,0 +1,40 @@
+import { {{pascalCase name}} } from "@prisma/client"
+import { Injectable } from "@nestjs/common"
+import { PrismaService } from "src/prisma/prisma.service"
+import {{pascalCase name}}Contract from "./{{kebabCase name}}.contract"
+import { {{pascalCase name}}Dto,  Create{{pascalCase name}}Dto, Update{{pascalCase name}}Dto } from "./{{kebabCase name}}.dto"
+
+@Injectable()
+export class {{pascalCase name}}Service implements {{pascalCase name}}Contract {
+  constructor(private readonly prismaService: PrismaService) {}
+
+	async retrieve({{camelCase name}}Dto?: Partial<{{pascalCase name}}Dto>): Promise<Array<{{pascalCase name}}Dto>> {}
+
+  async create(create{{camelCase name}}Dto: Create{{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto> {}
+
+  async update(update{{pascalCase name}}Dto: Update{{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto> {}
+
+  async delete({{camelCase name}}Dto: {{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto> {}
+
+	/************** UTILITY METHODS **************/
+	fromCreateDto(create{{pascalCase name}}Dto: Create{{pascalCase name}}Dto): {{pascalCase name}}{
+		return {
+			...create{{pascalCase name}}Dto,
+		}
+	}
+  fromUpdateDto(update{{pascalCase name}}Dto: Update{{pascalCase name}}Dto): {{pascalCase name}}{
+		return {
+			...update{{pascalCase name}}Dto,
+		}
+	}
+  fromDto({{camelCase name}}Dto: {{pascalCase name}}): {{pascalCase name}}{
+		return {
+			...{{camelCase name}}Dto,
+		}
+	}
+  fromModel({{camelCase name}}: {{pascalCase name}}): {{pascalCase name}}Dto{
+		return {
+			...{{camelCase name}},
+		}
+	}
+}
