@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common"
 import { ConfigModule } from "@nestjs/config"
-import { ProductModule } from "./product/product.module"
+import { ProductModule } from "./resources/product/product.module"
 import { PrismaModule } from "src/prisma/prisma.module"
 
 // this is the entry point

@@ -1,0 +1,1 @@
+export const NUMBER_OF_DECIMAL_PLACES = 2

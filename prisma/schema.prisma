@@ -8,11 +8,58 @@ datasource db {
 }
 
 model Product {
-  productId Int    @id @default(autoincrement())
-  name      String @db.VarChar(255)
+  id        Int     @id @default(autoincrement())
+  slug      String  @map("slug")
+  name      String  @map("name")
+  reference String  @map("reference")
+  price     Decimal @map("price") @db.Decimal(10, 2)
+  vat       Decimal @map("vat") @db.Decimal(10, 2) // value added service (ضريبة)
+  stockable Boolean @map("stockable")
 
-  // To make sure generated type is "Product" not "product"
-  // we map this model to the corresponding table
-  // and name the model what we want
+  stocks        Stock[]
+  productOrders ProductOrder[]
   @@map("product")
+}
+
+model Stock {
+  id        Int      @id @default(autoincrement())
+  productId Int      @unique @map("product_id")
+  quantity  Int      @map("quantity")
+  updatedAt DateTime @default(now()) @map("updated_at")
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("stock")
+}
+
+model Customer {
+  id          Int      @id @default(autoincrement())
+  firstName   String   @map("first_name")
+  lastName    String   @map("last_name")
+  dateOfBirth DateTime @map("date_of_birth")
+
+  orders Order[]
+  @@map("customer")
+}
+
+model Order {
+  id         Int      @id @default(autoincrement())
+  customerId Int      @unique @map("customer_id")
+  orderedAt  DateTime @default(now()) @map("ordered_at")
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  productOrders ProductOrder[]
+  @@map("order")
+}
+
+model ProductOrder {
+  productId Int     @map("product_id")
+  orderId   Int     @map("order_id")
+  quantity  Int     @map("quantity")
+  price     Decimal @map("price") @db.Decimal(10, 2)
+  vat       Decimal @map("vat") @db.Decimal(10, 2) // value added service (ضريبة)
+  product   Product @relation(fields: [productId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id])
+
+  @@id([productId, orderId])
+  @@map("product_order")
 }
