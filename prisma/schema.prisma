@@ -23,7 +23,7 @@ model Product {
 
 model Stock {
   id        Int      @id @default(autoincrement())
-  productId Int      @unique @map("product_id")
+  productId Int      @map("product_id")
   quantity  Int      @map("quantity")
   updatedAt DateTime @default(now()) @map("updated_at")
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -43,7 +43,7 @@ model Customer {
 
 model Order {
   id         Int      @id @default(autoincrement())
-  customerId Int      @unique @map("customer_id")
+  customerId Int      @map("customer_id")
   orderedAt  DateTime @default(now()) @map("ordered_at")
   customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
