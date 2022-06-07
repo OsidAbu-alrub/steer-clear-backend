@@ -9,11 +9,13 @@ import {
   Post,
   Put,
 } from "@nestjs/common"
+import { ApiResponse, ApiTags } from "@nestjs/swagger"
 import { GenericHttpException } from "src/exception/GenericHttpException"
 import { AsyncBaseResponse } from "src/global/BaseResponse"
-import ProductDto, { UpdateProductDto } from "./product.dto"
+import { CreateProductDto, ProductDto, UpdateProductDto } from "./product.dto"
 import { ProductService } from "./product.service"
 
+@ApiTags("Product")
 @Controller("product")
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -24,8 +26,14 @@ export class ProductController {
    * @param product - product to be created
    * @returns productId - the ID of the added product
    */
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Product created successfully",
+  })
   @Post("create")
-  async createProduct(@Body() product: ProductDto): AsyncBaseResponse<number> {
+  async createProduct(
+    @Body() product: CreateProductDto,
+  ): AsyncBaseResponse<number> {
     const createdProductId = await this.productService.createProduct(product)
     return {
       validation: {
@@ -41,6 +49,10 @@ export class ProductController {
    *
    * @returns products - All the products in the database
    */
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "All products retrieved successfully",
+  })
   @Get("all")
   async getAllProducts(): AsyncBaseResponse<ProductDto[]> {
     const products = await this.productService.getAllProducts()
@@ -59,6 +71,14 @@ export class ProductController {
    * @param product - product with updated attributes
    * @returns updatedProduct - the updated product
    */
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "All products retrieved successfully",
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: "Product ID doesn't exist",
+  })
   @Put("update")
   async updateProduct(
     @Body() product: UpdateProductDto,
@@ -79,6 +99,18 @@ export class ProductController {
    * @param productId - the ID of the product to be deleted
    * @returns product - the deleted product
    */
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Deleted product successfully",
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: "Product doesn't exist",
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: "id must be a number",
+  })
   @Delete(":id")
   async deleteProduct(
     @Param(
@@ -110,6 +142,18 @@ export class ProductController {
    * @param productId - the ID of the queried product
    * @returns product - the product queried from database
    */
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "product retrieved successfully",
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: "Product doesn't exist",
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: "id must be a number",
+  })
   @Get(":id")
   async findProduct(
     @Param(

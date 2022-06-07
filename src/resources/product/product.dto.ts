@@ -1,15 +1,36 @@
-export default interface ProductDto {
+import { ApiProperty, OmitType, PartialType } from "@nestjs/swagger"
+
+export class ProductDto {
+  @ApiProperty()
   id: number
+  @ApiProperty()
   productName: string
+  @ApiProperty()
   description: string
+  @ApiProperty()
   price: number
+  @ApiProperty()
   vat: number
+  @ApiProperty()
   stockable: boolean
+  @ApiProperty()
   priceAfterVat: number
 }
 
-export type CreateProductDto = Omit<ProductDto, "id" | "priceAfterVat">
+export class CreateProductDto extends OmitType(ProductDto, [
+  "id",
+  "priceAfterVat",
+]) {}
 
-export type UpdateProductDto = Partial<Omit<ProductDto, "priceAfterVat">> & {
-  id: ProductDto["id"]
+/**
+ * PartialType(
+ *  OmitType(ProductDto, ["priceAfterVat", "id"]),
+ *  )
+ * makes ID property required on type UpdateProductDto
+ */
+export class UpdateProductDto extends PartialType(
+  OmitType(ProductDto, ["priceAfterVat", "id"]),
+) {
+  @ApiProperty()
+  id: number
 }

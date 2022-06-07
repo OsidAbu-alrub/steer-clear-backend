@@ -1,5 +1,5 @@
 import { Product } from "@prisma/client"
-import ProductDto, { CreateProductDto, UpdateProductDto } from "./product.dto"
+import { ProductDto, CreateProductDto, UpdateProductDto } from "./product.dto"
 
 // this resembles the contract that the
 // service files should follow for product resource

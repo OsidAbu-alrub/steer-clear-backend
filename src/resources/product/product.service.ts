@@ -5,7 +5,7 @@ import { GenericHttpException } from "src/exception/GenericHttpException"
 import { NUMBER_OF_DECIMAL_PLACES } from "src/global/constants"
 import { PrismaService } from "src/prisma/prisma.service"
 import ProductContract from "./product.contract"
-import ProductDto, { CreateProductDto, UpdateProductDto } from "./product.dto"
+import { ProductDto, CreateProductDto, UpdateProductDto } from "./product.dto"
 
 @Injectable()
 export class ProductService implements ProductContract {
