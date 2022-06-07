@@ -10,7 +10,7 @@ export class {{pascalCase name}}Service implements {{pascalCase name}}Contract {
 
 	async retrieve({{camelCase name}}Dto?: Partial<{{pascalCase name}}Dto>): Promise<Array<{{pascalCase name}}Dto>> {}
 
-  async create(create{{camelCase name}}Dto: Create{{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto> {}
+  async create(create{{pascalCase name}}Dto: Create{{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto> {}
 
   async update(update{{pascalCase name}}Dto: Update{{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto> {}
 
@@ -27,7 +27,7 @@ export class {{pascalCase name}}Service implements {{pascalCase name}}Contract {
 			...update{{pascalCase name}}Dto,
 		}
 	}
-  fromDto({{camelCase name}}Dto: {{pascalCase name}}): {{pascalCase name}}{
+  fromDto({{camelCase name}}Dto: {{pascalCase name}}Dto): {{pascalCase name}}{
 		return {
 			...{{camelCase name}}Dto,
 		}

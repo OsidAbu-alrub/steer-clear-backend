@@ -1,8 +1,10 @@
 import { Body, Controller, Delete, HttpStatus, Post, Put } from "@nestjs/common"
 import { AsyncBaseResponse } from "src/global/BaseResponse"
-import { {{pascalCase name}}Dto, Update{{pascalCase name}}Dto, Create{{pascalCase name}}Dto } from "./{{kebabCase name}}.dto"
+import { ApiTags } from "@nestjs/swagger"
+import { {{pascalCase name}}Dto, Update{{pascalCase name}}Dto, Create{{pascalCase name}}Dto, Retrieve{{pascalCase name}}Dto } from "./{{kebabCase name}}.dto"
 import { {{pascalCase name}}Service } from "./{{kebabCase name}}.service"
 
+@ApiTags("{{pascalCase name}}")
 @Controller("{{kebabCase name}}")
 export class {{pascalCase name}}Controller {
   constructor(private readonly {{camelCase name}}Service: {{pascalCase name}}Service) {}
@@ -13,7 +15,7 @@ export class {{pascalCase name}}Controller {
    * @returns arrayOf{{pascalCase name}} - Get {{pascalCase name}} objects from the database
    */
   @Post("retrieve")
-  async retrieve(@Body() {{camelCase name}}Dto?: Partial<{{pascalCase name}}Dto>): AsyncBaseResponse<Array<{{pascalCase name}}Dto>> {
+  async retrieve(@Body() retrieve{{pascalCase name}}Dto: Retrieve{{pascalCase name}}Dto = {}): AsyncBaseResponse<Array<{{pascalCase name}}Dto>> {
     const arrayOf{{pascalCase name}} = await this.{{camelCase name}}Service.retrieve({{camelCase name}}Dto)
     return {
       validation: {
@@ -45,7 +47,7 @@ export class {{pascalCase name}}Controller {
   /**
    * update existing {{pascalCase name}}
    *
-   * @param updated{{camelCase name}}Dto - {{pascalCase name}} with updated attributes
+   * @param updated{{pascalCase name}}Dto - {{pascalCase name}} with updated attributes
    * @returns updated{{pascalCase name}} - the updated {{pascalCase name}}
    */
   @Put("update")

@@ -8,6 +8,7 @@ export default interface {{pascalCase name}}Contract {
   delete({{camelCase name}}Dto: {{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto>
   fromCreateDto(create{{pascalCase name}}Dto: Create{{pascalCase name}}Dto): {{pascalCase name}}
   fromUpdateDto(update{{pascalCase name}}Dto: Update{{pascalCase name}}Dto): {{pascalCase name}}
-  fromDto({{camelCase name}}Dto: {{pascalCase name}}): {{pascalCase name}}Dto
-  fromModel({{camelCase name}}: {{pascalCase name}}Dto): {{pascalCase name}}
+  fromRetrieveDto(retrieve{{pascalCase name}}Dto: Retrieve{{pascalCase name}}Dto): {{pascalCase name}}
+  fromDto({{camelCase name}}Dto: {{pascalCase name}}): {{pascalCase name}}
+  fromModel({{camelCase name}}: {{pascalCase name}}Dto): {{pascalCase name}}Dto
 }
