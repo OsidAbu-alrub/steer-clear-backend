@@ -11,12 +11,12 @@ export class {{pascalCase name}}Controller {
 
 	/**
    * Get {{pascalCase name}} objects from database
-    * @param {{camelCase name}}Dto - object that the retrieval query is based on
+    * @param retrieve{{pascalCase name}}Dto - object that the retrieval query is based on
    * @returns arrayOf{{pascalCase name}} - Get {{pascalCase name}} objects from the database
    */
   @Post("retrieve")
-  async retrieve(@Body() retrieve{{pascalCase name}}Dto: Retrieve{{pascalCase name}}Dto = {}): AsyncBaseResponse<Array<{{pascalCase name}}Dto>> {
-    const arrayOf{{pascalCase name}} = await this.{{camelCase name}}Service.retrieve({{camelCase name}}Dto)
+  async retrieve(@Body() retrieve{{pascalCase name}}Dto: Retrieve{{pascalCase name}}Dto): AsyncBaseResponse<Array<{{pascalCase name}}Dto>> {
+    const arrayOf{{pascalCase name}} = await this.{{camelCase name}}Service.retrieve(retrieve{{pascalCase name}}Dto)
     return {
       validation: {
         message: "",
