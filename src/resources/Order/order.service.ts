@@ -55,6 +55,22 @@ export class OrderService implements OrderContract {
   async update(updateOrderDto: UpdateOrderDto): Promise<OrderDto> {
     const order = this.fromUpdateDto(updateOrderDto)
     await this.doesCustomerExist(order.customerId)
+
+    const doesOrderExist = Boolean(
+      await this.prismaService.order.findUnique({
+        where: {
+          id: order.id,
+        },
+      }),
+    )
+
+    if (!doesOrderExist) {
+      throw new GenericHttpException(
+        `Order with ID ${updateOrderDto.id} doesn't exist`,
+        HttpStatus.NOT_FOUND,
+      )
+    }
+
     const updatedOrder = await this.prismaService.order.update({
       where: {
         id: order.id,

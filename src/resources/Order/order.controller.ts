@@ -83,7 +83,11 @@ export class OrderController {
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: "Customer with sent doesn't exist",
+    description: "Customer with sent order id doesn't exist",
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: "Order not found",
   })
   @Put("update")
   async update(

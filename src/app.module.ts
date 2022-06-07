@@ -4,6 +4,7 @@ import { ProductModule } from "./resources/product/product.module"
 import { PrismaModule } from "src/prisma/prisma.module"
 import { StockModule } from "./resources/Stock/stock.module"
 import { CustomerModule } from "./resources/Customer/customer.module"
+import { OrderModule } from "./resources/Order/order.module"
 
 // this is the entry point
 // if you dont import modules here, you will not be able
@@ -15,6 +16,7 @@ import { CustomerModule } from "./resources/Customer/customer.module"
     ProductModule,
     StockModule,
     CustomerModule,
+    OrderModule,
   ],
 })
 export class AppModule {}
