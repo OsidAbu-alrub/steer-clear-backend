@@ -1,7 +1,9 @@
 import { NestFactory } from "@nestjs/core"
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
 import helmet from "helmet"
 import { AppModule } from "./app.module"
 import { HttpExceptionFilter } from "./exception/HttpExceptionFilter"
+import { TAGS } from "./global/constants"
 import { PrismaService } from "./prisma/prisma.service"
 
 async function bootstrap() {
@@ -13,6 +15,22 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter())
   // app.useGlobalPipes()
 
+  const config = new DocumentBuilder()
+    .setTitle("Orders Management API")
+    .setDescription("Orders Management API description")
+    .setVersion("1.0")
+    .addTag(TAGS.ORDER)
+    .addTag(TAGS.CUSTOMER)
+    .addTag(TAGS.PRODUCT)
+    .addTag(TAGS.PRODUCT_ORDER)
+    .addTag(TAGS.ROLE)
+    .addTag(TAGS.STOCK)
+    .addTag(TAGS.USER)
+    .build()
+
+  const document = SwaggerModule.createDocument(app, config)
+  SwaggerModule.setup("api", app, document)
+
   // comment out these two lines if you don't want
   // to connect to a database
   const prismaService = app.get(PrismaService)
@@ -22,6 +40,7 @@ async function bootstrap() {
   console.log(
     `
 Application started on => http://localhost:${PORT}/
+Swagger started on => http://localhost:9000/api/#/default
 `,
   )
 }
