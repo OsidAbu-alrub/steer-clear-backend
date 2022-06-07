@@ -8,7 +8,7 @@ import { {{pascalCase name}}Dto,  Create{{pascalCase name}}Dto, Update{{pascalCa
 export class {{pascalCase name}}Service implements {{pascalCase name}}Contract {
   constructor(private readonly prismaService: PrismaService) {}
 
-	async retrieve({{camelCase name}}Dto: Retrieve{{pascalCase name}}Dto = {}): Promise<Array<{{pascalCase name}}Dto>> {}
+	async retrieve(retrieve{{pascalCase name}}Dto: Retrieve{{pascalCase name}}Dto = {}): Promise<Array<{{pascalCase name}}Dto>> {}
 
   async create(create{{pascalCase name}}Dto: Create{{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto> {}
 

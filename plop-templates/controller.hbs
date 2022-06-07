@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, HttpStatus, Post, Put } from "@nestjs/common"
 import { AsyncBaseResponse } from "src/global/BaseResponse"
-import { ApiTags } from "@nestjs/swagger"
+import { ApiTags, ApiResponse } from "@nestjs/swagger"
 import { {{pascalCase name}}Dto, Update{{pascalCase name}}Dto, Create{{pascalCase name}}Dto, Retrieve{{pascalCase name}}Dto } from "./{{kebabCase name}}.dto"
 import { {{pascalCase name}}Service } from "./{{kebabCase name}}.service"
 
@@ -14,6 +14,10 @@ export class {{pascalCase name}}Controller {
     * @param retrieve{{pascalCase name}}Dto - object that the retrieval query is based on
    * @returns arrayOf{{pascalCase name}} - Get {{pascalCase name}} objects from the database
    */
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "{{pascalCase name}} retrieved successfully",
+  })
   @Post("retrieve")
   async retrieve(@Body() retrieve{{pascalCase name}}Dto: Retrieve{{pascalCase name}}Dto): AsyncBaseResponse<Array<{{pascalCase name}}Dto>> {
     const arrayOf{{pascalCase name}} = await this.{{camelCase name}}Service.retrieve(retrieve{{pascalCase name}}Dto)
@@ -32,13 +36,17 @@ export class {{pascalCase name}}Controller {
    * @param create{{pascalCase name}}Dto - {{pascalCase name}} to be created
    * @returns created{{pascalCase name}} - the {{pascalCase name}}Dto object that was created
    */
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: "{{pascalCase name}} created successfully",
+  })
   @Post("create")
   async create(@Body() create{{pascalCase name}}Dto: Create{{pascalCase name}}Dto): AsyncBaseResponse<{{pascalCase name}}Dto> {
     const created{{pascalCase name}} = await this.{{camelCase name}}Service.create(create{{pascalCase name}}Dto)
     return {
       validation: {
         message: "",
-        statusCode: HttpStatus.OK,
+        statusCode: HttpStatus.CREATED,
       },
       data: created{{pascalCase name}},
     }
@@ -50,6 +58,10 @@ export class {{pascalCase name}}Controller {
    * @param updated{{pascalCase name}}Dto - {{pascalCase name}} with updated attributes
    * @returns updated{{pascalCase name}} - the updated {{pascalCase name}}
    */
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "{{pascalCase name}} updated successfully",
+  })
   @Put("update")
   async update(
     @Body() updated{{pascalCase name}}Dto: Update{{pascalCase name}}Dto,
@@ -70,6 +82,10 @@ export class {{pascalCase name}}Controller {
    * @param {{camelCase name}}Dto - the {{pascalCase name}} to be deleted
    * @returns deleted{{pascalCase name}} - the deleted {{pascalCase name}}
    */
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "{{pascalCase name}} deleted successfully",
+  })
   @Delete("delete")
   async delete(
     @Body() {{camelCase name}}Dto: {{pascalCase name}}Dto
