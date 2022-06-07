@@ -34,17 +34,7 @@ export class OrderService implements OrderContract {
   async create(createOrderDto: CreateOrderDto): Promise<OrderDto> {
     const order = this.fromCreateDto(createOrderDto)
 
-    await this.prismaService.customer.findUnique({
-      where: {
-        id: order.customerId,
-      },
-      rejectOnNotFound: () => {
-        throw new GenericHttpException(
-          `Customer with ID ${order.customerId} not found`,
-          HttpStatus.NOT_FOUND,
-        )
-      },
-    })
+    await this.doesCustomerExist(order.customerId)
 
     const createdOrder = await this.prismaService.order.create({
       data: order,
@@ -91,7 +81,7 @@ export class OrderService implements OrderContract {
 
   /************** UTILITY METHODS **************/
   private doesCustomerExist = async (customerId: Order["customerId"]) => {
-    this.prismaService.customer.findUnique({
+    await this.prismaService.customer.findUnique({
       where: {
         id: customerId,
       },
