@@ -1,0 +1,2 @@
+- Fix Plop templates by
+  - Fix `fromCreateDto, fromUpdateDto, fromDto, and fromModel`
