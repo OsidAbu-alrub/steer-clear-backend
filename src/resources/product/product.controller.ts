@@ -27,7 +27,7 @@ export class ProductController {
    * @returns productId - the ID of the added product
    */
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: HttpStatus.CREATED,
     description: "Product created successfully",
   })
   @Post("create")
@@ -38,7 +38,7 @@ export class ProductController {
     return {
       validation: {
         message: "",
-        statusCode: HttpStatus.OK,
+        statusCode: HttpStatus.CREATED,
       },
       data: createdProductId,
     }
