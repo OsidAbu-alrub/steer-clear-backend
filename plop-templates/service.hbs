@@ -6,9 +6,7 @@ import { {{pascalCase name}}Dto,  Create{{pascalCase name}}Dto, Update{{pascalCa
 
 @Injectable()
 export class {{pascalCase name}}Service implements {{pascalCase name}}Contract {
-  constructor(private readonly prismaService: PrismaService) {
-		throw new Error("Method not implemented.")
-	}
+  constructor(private readonly prismaService: PrismaService) {}
 
 	retrieve = async (retrieve{{pascalCase name}}Dto: Retrieve{{pascalCase name}}Dto = {}): Promise<Array<{{pascalCase name}}Dto>> => {
 			throw new Error("Method not implemented.")
