@@ -33,9 +33,11 @@ model Stock {
 
 model Customer {
   id          Int      @id @default(autoincrement())
+  userId      Int      @unique @map("user_id")
   firstName   String   @map("first_name")
   lastName    String   @map("last_name")
   dateOfBirth DateTime @map("date_of_birth")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   orders Order[]
   @@map("customer")
@@ -62,4 +64,12 @@ model ProductOrder {
 
   @@id([productId, orderId])
   @@map("product_order")
+}
+
+model User {
+  id       Int       @id @default(autoincrement()) @map("id")
+  email    String    @unique @map("email")
+  password String    @map("password")
+  isAdmin  Boolean   @default(false) @map("is_admin")
+  customer Customer?
 }
