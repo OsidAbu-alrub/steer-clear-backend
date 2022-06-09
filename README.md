@@ -1,96 +1,64 @@
-## Naming Convetions
+# Osid Abu-Alrub (1183096)
 
-### Database
+Second web services project
 
-|       -       |                                                             |
-| :-----------: | :---------------------------------------------------------: |
-| database name |        lowercase with words separated by underscores        |
-|  table name   | lowercase with words separated by underscores<br>(singular) |
-|  properties   |        lowercase with words separated by underscores        |
-| foriegn keys  |                   tableName_propertyName                    |
+## Documentation
 
-## Description
+Under this section, you will find the following:
 
-This is a starter project that you can use as a [NestJS](https://github.com/nestjs/nest) template with [Prisma](https://www.prisma.io/docs/)
+- Table contains HTTP method, URL path, HTTP status code, and a description for each endpoint
+- How to build the application
+- How to create and run docker image
+- Link to docker hub repo
 
-## Installation
+### Table
 
-- Clone the repo
+### Build & run application
 
-```bash
-$ git clone git@github.com:OsidAbu-alrub/nestjs-prisma-template.git
-```
-
-- Change origin url to point to your own repo
-
-```bash
-$ git remote set-url origin <remote_url>
-```
-
-- Install deps
+Run the following commands to build and run the application
 
 ```bash
 $ yarn install
+$ yarn build
+$ yarn start
 ```
 
-## Running the app
+### Create and run docker image
+
+**Not that this won't work because database is not configured to run with container**<br/>
+First navigate into directory that contains `dockerFile` (root directory). Then run the following command to build the image
 
 ```bash
-# development
-$ yarn dev
+$ # docker build -t <image-name> .
+$ docker build -t orders-management .
 ```
 
-## Resource directory structure
-
-This structure must come under the src directory:
-
-- resource/
-  - **resource.contract.ts** => interface that contains methods that should be implemented in the resource.service file
-  - **resource.controller.ts**
-  - **resource.dto.ts**
-  - **resource.module.ts**
-  - **resource.service.ts** => must implement resource.contract interface
-
-**P.S. You get models from prisma client after generating database**
-
-## Resource generation
-
-you can find how to generate nestjs resources [here](https://docs.nestjs.com/cli/usages#:~:text=nest%20generate%20%3Cschematic%3E%20%3Cname%3E%20%5Boptions%5D)
-
-## Dealing with database
+Run this command to check available images
 
 ```bash
-# Create migrations from your Prisma schema, apply them to the database, generate artifacts (e.g. Prisma Client)
-$ npx prisma migrate dev --name init
+$ docker images
 ```
+
+Run this command start up a new container
 
 ```bash
-# Pull the schema from an existing database, updating the Prisma schema
-$ npx prisma db pull
+$ # docker run --name <container-name> -p <application-port>:<container-port> <image-name>
+$ docker run --name orders-management-container -p 127.0.0.1:9000:9000 orders-management
 ```
+
+Run this command to check running containers
 
 ```bash
-# Push the Prisma schema state to the database
-$ npx prisma db push
+$ docker ps
 ```
 
-## Generate prsima client
+Run this command to stop running container
 
 ```bash
-$ npx prisma generate
+$ # docker stop <container-name>
+$ docker stop orders-management-container
 ```
 
-**reload developer window if you are using vscode to access prisma client**
+### Link to docker hub image
 
-**For more info you could check prisma docs [here](https://www.prisma.io/docs/getting-started/quickstart)**
-<br/>
-
-## Testing
-
-Coming Soon!
-
-## TODOS
-
-- Add [global error filtering](https://docs.nestjs.com/exception-filters)
-- Add ability to generate folder with contract, controller, dto, module, and service with package.json scripts (use blobs)
-- Add documentation for db generation commands
+https://hub.docker.com/r/abualrub/orders-management
