@@ -5,6 +5,7 @@ import { AppModule } from "./app.module"
 import { HttpExceptionFilter } from "./exception/HttpExceptionFilter"
 import { TAGS } from "./global/constants"
 import { PrismaService } from "./prisma/prisma.service"
+import * as cookieParser from "cookie-parser"
 
 async function bootstrap() {
   const PORT = process.env.PORT || 3000
@@ -12,8 +13,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   app
     .setGlobalPrefix(GLOBAL_PREFIX)
-    .use(helmet())
     .useGlobalFilters(new HttpExceptionFilter())
+    .use(helmet())
+    .use(cookieParser())
+    .enableCors({
+      credentials: true,
+      origin: "*",
+    })
   // .useGlobalPipes()
 
   const config = new DocumentBuilder()
@@ -25,7 +31,6 @@ async function bootstrap() {
     .addTag(TAGS.PRODUCT)
     .addTag(TAGS.PRODUCT_ORDER)
     .addTag(TAGS.STOCK)
-    .addTag(TAGS.ROLE)
     .addTag(TAGS.USER)
     .build()
 

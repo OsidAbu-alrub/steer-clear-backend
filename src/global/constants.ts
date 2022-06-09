@@ -6,5 +6,4 @@ export enum TAGS {
   ORDER = "Order",
   CUSTOMER = "Customer",
   PRODUCT_ORDER = "ProductOrder",
-  ROLE = "Role",
 }

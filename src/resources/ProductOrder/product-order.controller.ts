@@ -1,6 +1,14 @@
-import { Body, Controller, Delete, HttpStatus, Post } from "@nestjs/common"
+import {
+  Body,
+  Controller,
+  Delete,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from "@nestjs/common"
 import { ApiResponse, ApiTags } from "@nestjs/swagger"
 import { AsyncBaseResponse } from "src/global/BaseResponse"
+import { JwtAuthGuard } from "src/jwt/jwt.guard"
 import {
   CreateProductOrderDto,
   DeleteProductOrderDto,
@@ -9,6 +17,7 @@ import {
 } from "./product-order.dto"
 import { ProductOrderService } from "./product-order.service"
 
+@UseGuards(JwtAuthGuard)
 @ApiTags("ProductOrder")
 @Controller("product-order")
 export class ProductOrderController {
@@ -72,6 +81,10 @@ export class ProductOrderController {
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: "Quantity must be greater than 0",
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: "If customer tries to create order for another customer",
   })
   @Post("create")
   async create(

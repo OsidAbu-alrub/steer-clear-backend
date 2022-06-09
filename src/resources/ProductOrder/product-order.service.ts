@@ -1,6 +1,10 @@
-import { HttpStatus, Injectable } from "@nestjs/common"
+import { HttpStatus, Inject, Injectable, Scope } from "@nestjs/common"
+import { REQUEST } from "@nestjs/core"
+import { JwtService } from "@nestjs/jwt"
 import { ProductOrder } from "@prisma/client"
+import { Request } from "express"
 import { GenericHttpException } from "src/exception/GenericHttpException"
+import { JwtPayload } from "src/jwt/jwt.strategy"
 import { PrismaService } from "src/prisma/prisma.service"
 import { OrderService } from "../Order/order.service"
 import { ProductService } from "../product/product.service"
@@ -14,13 +18,15 @@ import {
 } from "./product-order.dto"
 import { calculateTotal, isEnoughStock } from "./product-order.utils"
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class ProductOrderService implements ProductOrderContract {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly orderService: OrderService,
     private readonly stockService: StockService,
     private readonly productService: ProductService,
+    private readonly jwtService: JwtService,
+    @Inject(REQUEST) private readonly request: Request,
   ) {}
 
   async retrieve(
@@ -29,12 +35,30 @@ export class ProductOrderService implements ProductOrderContract {
     const retrieveProductOrderModel = this.fromRetrieveDto(
       retrieveProductOrderDto,
     )
-    const productOrders = await this.prismaService.productOrder.findMany({
-      where: {
-        orderId: retrieveProductOrderModel.orderId,
-        productId: retrieveProductOrderModel.productId,
-      },
-    })
+
+    const userInfo = this.getUserInfo()
+    let productOrders = []
+    if (userInfo.isAdmin) {
+      productOrders = await this.prismaService.productOrder.findMany({
+        where: {
+          orderId: retrieveProductOrderModel.orderId,
+          productId: retrieveProductOrderModel.productId,
+        },
+      })
+    } else {
+      productOrders = await this.prismaService.productOrder.findMany({
+        where: {
+          orderId: retrieveProductOrderModel.orderId,
+          productId: retrieveProductOrderModel.productId,
+          AND: {
+            order: {
+              customerId: userInfo.sub,
+            },
+          },
+        },
+      })
+    }
+
     return productOrders.map(this.fromModel)
   }
 
@@ -42,6 +66,7 @@ export class ProductOrderService implements ProductOrderContract {
     createProductOrderDto: CreateProductOrderDto,
   ): Promise<ProductOrderDto> {
     const productOrder = this.fromCreateDto(createProductOrderDto)
+    const userInfo = this.getUserInfo()
 
     if (!createProductOrderDto.productId)
       throw new GenericHttpException(
@@ -54,6 +79,16 @@ export class ProductOrderService implements ProductOrderContract {
         "Customer ID is missing",
         HttpStatus.BAD_REQUEST,
       )
+
+    if (
+      !userInfo.isAdmin &&
+      userInfo.sub !== createProductOrderDto.customerId
+    ) {
+      throw new GenericHttpException(
+        "You are not authorized to create product order for this customer",
+        HttpStatus.UNAUTHORIZED,
+      )
+    }
 
     if (!createProductOrderDto.quantity)
       throw new GenericHttpException(
@@ -159,6 +194,12 @@ export class ProductOrderService implements ProductOrderContract {
   }
 
   /************** UTILITY METHODS **************/
+  private getUserInfo = (): JwtPayload => {
+    const userInfo = this.jwtService.decode(
+      this.request.cookies[process.env.JWT_COOKIE_NAME],
+    ) as JwtPayload
+    return userInfo
+  }
   private fromDeleteDto(
     deleteProductOrderDto: DeleteProductOrderDto,
   ): ProductOrder {

@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from "@nestjs/common"
 import { AsyncBaseResponse } from "src/global/BaseResponse"
 import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger"
@@ -18,7 +19,15 @@ import {
 } from "./customer.dto"
 import { CustomerService } from "./customer.service"
 import { GenericHttpException } from "src/exception/GenericHttpException"
+import { JwtAuthGuard } from "src/jwt/jwt.guard"
+import { IsAdmin } from "src/roles/roles.decorator"
 
+@UseGuards(JwtAuthGuard)
+@IsAdmin(true)
+@ApiResponse({
+  status: HttpStatus.FORBIDDEN,
+  description: "If not admin",
+})
 @ApiTags("Customer")
 @Controller("customer")
 export class CustomerController {
@@ -59,6 +68,19 @@ export class CustomerController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: "Customer created successfully",
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description:
+      "first name, last name, date of birth, and userId are required",
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: "User ID doesn't exist in database",
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: "User ID already linked to customer",
   })
   @Post("create")
   async create(

@@ -9,6 +9,8 @@ export class CustomerDto {
   lastName: string
   @ApiProperty()
   dateOfBirth: string
+  @ApiProperty()
+  userId: number
 }
 export class RetrieveCustomerDto extends PartialType(CustomerDto) {}
 export class CreateCustomerDto extends OmitType(CustomerDto, ["id"]) {}

@@ -7,10 +7,13 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from "@nestjs/common"
 import { ApiResponse, ApiTags } from "@nestjs/swagger"
 import { GenericHttpException } from "src/exception/GenericHttpException"
 import { AsyncBaseResponse } from "src/global/BaseResponse"
+import { IsAdmin } from "src/roles/roles.decorator"
+import { JwtAuthGuard } from "src/jwt/jwt.guard"
 import {
   CreateOrderDto,
   OrderDto,
@@ -18,7 +21,12 @@ import {
   UpdateOrderDto,
 } from "./order.dto"
 import { OrderService } from "./order.service"
-
+@UseGuards(JwtAuthGuard)
+@IsAdmin(true)
+@ApiResponse({
+  status: HttpStatus.FORBIDDEN,
+  description: "If not admin",
+})
 @ApiTags("Order")
 @Controller("order")
 export class OrderController {

@@ -7,10 +7,13 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from "@nestjs/common"
 import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger"
 import { GenericHttpException } from "src/exception/GenericHttpException"
 import { AsyncBaseResponse } from "src/global/BaseResponse"
+import { IsAdmin } from "src/roles/roles.decorator"
+import { JwtAuthGuard } from "src/jwt/jwt.guard"
 import {
   CreateStockDto,
   RetrieveStockDto,
@@ -19,6 +22,12 @@ import {
 } from "./stock.dto"
 import { StockService } from "./stock.service"
 
+@UseGuards(JwtAuthGuard)
+@IsAdmin(true)
+@ApiResponse({
+  status: HttpStatus.FORBIDDEN,
+  description: "If not admin",
+})
 @ApiTags("Stock")
 @Controller("stock")
 export class StockController {

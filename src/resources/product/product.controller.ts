@@ -8,13 +8,17 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from "@nestjs/common"
 import { ApiResponse, ApiTags } from "@nestjs/swagger"
 import { GenericHttpException } from "src/exception/GenericHttpException"
 import { AsyncBaseResponse } from "src/global/BaseResponse"
+import { IsAdmin } from "src/roles/roles.decorator"
+import { JwtAuthGuard } from "src/jwt/jwt.guard"
 import { CreateProductDto, ProductDto, UpdateProductDto } from "./product.dto"
 import { ProductService } from "./product.service"
 
+@UseGuards(JwtAuthGuard)
 @ApiTags("Product")
 @Controller("product")
 export class ProductController {
@@ -30,6 +34,11 @@ export class ProductController {
     status: HttpStatus.CREATED,
     description: "Product created successfully",
   })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: "If not admin",
+  })
+  @IsAdmin(true)
   @Post("create")
   async createProduct(
     @Body() product: CreateProductDto,
@@ -53,9 +62,11 @@ export class ProductController {
     status: HttpStatus.OK,
     description: "All products retrieved successfully",
   })
+  @IsAdmin(false)
   @Get("all")
   async getAllProducts(): AsyncBaseResponse<ProductDto[]> {
     const products = await this.productService.getAllProducts()
+
     return {
       validation: {
         message: "",
@@ -79,6 +90,11 @@ export class ProductController {
     status: HttpStatus.NOT_FOUND,
     description: "Product ID doesn't exist",
   })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: "If not admin",
+  })
+  @IsAdmin(true)
   @Put("update")
   async updateProduct(
     @Body() product: UpdateProductDto,
@@ -111,6 +127,11 @@ export class ProductController {
     status: HttpStatus.BAD_REQUEST,
     description: "id must be a number",
   })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: "If not admin",
+  })
+  @IsAdmin(true)
   @Delete(":id")
   async deleteProduct(
     @Param(
@@ -154,6 +175,7 @@ export class ProductController {
     status: HttpStatus.BAD_REQUEST,
     description: "id must be a number",
   })
+  @IsAdmin(false)
   @Get(":id")
   async findProduct(
     @Param(
