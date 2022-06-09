@@ -66,7 +66,7 @@ export class CustomerController {
    * @returns createdCustomer - the CustomerDto object that was created
    */
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: HttpStatus.CREATED,
     description: "Customer created successfully",
   })
   @ApiResponse({
@@ -90,7 +90,7 @@ export class CustomerController {
     return {
       validation: {
         message: "",
-        statusCode: HttpStatus.OK,
+        statusCode: HttpStatus.CREATED,
       },
       data: createdCustomer,
     }

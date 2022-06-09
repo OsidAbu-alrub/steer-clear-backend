@@ -23,10 +23,6 @@ export class AuthController {
     status: HttpStatus.BAD_REQUEST,
     description: "Invalid credentials",
   })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: "Invalid credentials",
-  })
   @Post("login")
   async login(
     @Body() authDto: LoginAuthDto,
