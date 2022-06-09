@@ -8,22 +8,22 @@ datasource db {
 }
 
 model Product {
-  id        Int     @id @default(autoincrement())
-  slug      String  @map("slug")
-  name      String  @map("name")
-  reference String  @map("reference")
-  price     Decimal @map("price") @db.Decimal(10, 2)
-  vat       Decimal @map("vat") @db.Decimal(10, 2) // value added service (ضريبة)
-  stockable Boolean @map("stockable")
-
-  stocks        Stock[]
+  id            Int            @id @default(autoincrement())
+  slug          String         @map("slug")
+  name          String         @map("name")
+  reference     String         @map("reference")
+  price         Decimal        @map("price") @db.Decimal(10, 2)
+  vat           Decimal        @map("vat") @db.Decimal(10, 2) // value added service (ضريبة)
+  stockable     Boolean        @map("stockable")
+  stock         Stock?
   productOrders ProductOrder[]
+
   @@map("product")
 }
 
 model Stock {
   id        Int      @id @default(autoincrement())
-  productId Int      @map("product_id")
+  productId Int      @unique @map("product_id")
   quantity  Int      @map("quantity")
   updatedAt DateTime @default(now()) @map("updated_at")
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
