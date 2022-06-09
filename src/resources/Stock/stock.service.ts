@@ -9,7 +9,7 @@ import {
   RetrieveStockDto,
 } from "./stock.dto"
 import { GenericHttpException } from "src/exception/GenericHttpException"
-import { ProductService } from "../product/product.service"
+import { ProductService } from "../Product/product.service"
 
 @Injectable()
 export class StockService implements StockContract {

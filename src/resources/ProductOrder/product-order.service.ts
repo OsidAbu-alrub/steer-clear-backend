@@ -7,7 +7,7 @@ import { GenericHttpException } from "src/exception/GenericHttpException"
 import { JwtPayload } from "src/jwt/jwt.strategy"
 import { PrismaService } from "src/prisma/prisma.service"
 import { OrderService } from "../Order/order.service"
-import { ProductService } from "../product/product.service"
+import { ProductService } from "../Product/product.service"
 import { StockService } from "../Stock/stock.service"
 import ProductOrderContract from "./product-order.contract"
 import {
