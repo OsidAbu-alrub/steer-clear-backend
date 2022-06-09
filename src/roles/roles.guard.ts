@@ -30,6 +30,6 @@ export class RolesGuard implements CanActivate {
       req.cookies[process.env.JWT_COOKIE_NAME],
     ) as JwtPayload
 
-    return user.isAdmin === hasToBeAdmin
+    return user?.isAdmin === hasToBeAdmin
   }
 }
