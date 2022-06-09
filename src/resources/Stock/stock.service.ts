@@ -2,68 +2,86 @@ import { Stock } from "@prisma/client"
 import { HttpStatus, Injectable } from "@nestjs/common"
 import { PrismaService } from "src/prisma/prisma.service"
 import StockContract from "./stock.contract"
-import { StockDto, CreateStockDto, UpdateStockDto } from "./stock.dto"
+import {
+  StockDto,
+  CreateStockDto,
+  UpdateStockDto,
+  RetrieveStockDto,
+} from "./stock.dto"
 import { GenericHttpException } from "src/exception/GenericHttpException"
+import { ProductService } from "../product/product.service"
 
 @Injectable()
 export class StockService implements StockContract {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly productService: ProductService,
+  ) {}
 
-  async retrieve(stockDto: Partial<StockDto> = {}): Promise<Array<StockDto>> {
-    const stockModel = this.fromDto(stockDto)
+  retrieve = async (
+    retrieveStockDto: RetrieveStockDto = {},
+  ): Promise<Array<StockDto>> => {
+    const stockModel = this.fromRetrieveDto(retrieveStockDto)
     const stocks = await this.prismaService.stock.findMany({
-      where: stockModel,
+      where: {
+        productId: stockModel.productId,
+        id: stockModel.id,
+        quantity: {
+          lte: stockModel.quantity,
+        },
+        updatedAt: {
+          lte: stockModel.updatedAt,
+        },
+      },
     })
     return stocks.map(this.fromModel)
   }
 
-  async retrieveProductQuantity(
-    productId: StockDto["productId"],
-  ): Promise<number> {
-    const doesProductExist = (await this.retrieve({ productId })).length > 0
-    if (!doesProductExist) {
-      throw new GenericHttpException(
-        `Product with ID ${productId} not found`,
-        HttpStatus.NOT_FOUND,
-      )
-    }
-    const products = await this.prismaService.stock.aggregate({
-      where: {
-        productId,
-      },
-      _sum: {
-        quantity: true,
-      },
-    })
-    return products._sum.quantity ?? 0
-  }
-
-  async create(createstockDto: CreateStockDto): Promise<StockDto> {
-    const createStockModel = this.fromCreateDto(createstockDto)
+  create = async (createStockDto: CreateStockDto): Promise<StockDto> => {
     const { stockable } = await this.prismaService.product.findUnique({
       where: {
-        id: createStockModel.productId,
+        id: createStockDto.productId,
       },
       rejectOnNotFound: () => {
         throw new GenericHttpException(
-          `Product with ID ${createStockModel.productId} not found`,
+          `Product with ID ${createStockDto.productId} not found`,
           HttpStatus.NOT_FOUND,
         )
       },
     })
+
     if (!stockable)
       throw new GenericHttpException(
-        `Product with ID ${createStockModel.productId} is not stockable`,
+        `Product with ID ${createStockDto.productId} is not stockable`,
         HttpStatus.BAD_REQUEST,
       )
 
+    const duplicatedStock = await this.prismaService.stock.findUnique({
+      where: {
+        productId: createStockDto.productId,
+      },
+    })
+
+    if (duplicatedStock) {
+      const updatedStockDto = await this.update({
+        id: duplicatedStock.id,
+        productId: duplicatedStock.productId,
+        quantity: createStockDto.quantity,
+      })
+
+      return updatedStockDto
+    }
+    const createStockModel = this.fromCreateDto(createStockDto)
     const createdStock = await this.prismaService.stock.create({
       data: createStockModel,
     })
     return this.fromModel(createdStock)
   }
 
-  async update(updateStockDto: UpdateStockDto): Promise<StockDto> {
+  update = async ({
+    operation = "increment",
+    ...updateStockDto
+  }: UpdateStockDto): Promise<StockDto> => {
     const updateStockModel = this.fromUpdateDto(updateStockDto)
 
     if (!updateStockModel.id) {
@@ -73,14 +91,35 @@ export class StockService implements StockContract {
       )
     }
 
-    const doesStockExist = Boolean(
-      (await this.retrieve({ id: updateStockModel.id })).length,
+    const oldStock = (await this.retrieve({ id: updateStockModel.id })).find(
+      (stock) => stock.id === updateStockModel.id,
     )
 
-    if (!doesStockExist) {
+    if (!oldStock) {
       throw new GenericHttpException(
         `Stock with ID ${updateStockModel.id} not found`,
         HttpStatus.NOT_FOUND,
+      )
+    }
+
+    const [oldProduct, updatedProduct] = await Promise.all([
+      this.productService.findProduct(oldStock.productId),
+      updateStockModel.productId &&
+        updateStockModel.productId !== oldStock.productId &&
+        this.productService.findProduct(updateStockModel.productId),
+    ])
+
+    if (!oldProduct.stockable) {
+      throw new GenericHttpException(
+        `Product with ID ${oldProduct.id} is not stockable (can't be updated)`,
+        HttpStatus.BAD_REQUEST,
+      )
+    }
+
+    if (updatedProduct && !updatedProduct.stockable) {
+      throw new GenericHttpException(
+        `Product with ID ${updatedProduct.id} is not stockable (can't be updated)`,
+        HttpStatus.BAD_REQUEST,
       )
     }
 
@@ -88,13 +127,18 @@ export class StockService implements StockContract {
       where: {
         id: updateStockModel.id,
       },
-      data: updateStockModel,
+      data: {
+        ...updateStockModel,
+        quantity: {
+          [operation]: updateStockModel.quantity,
+        },
+      },
     })
 
     return this.fromModel(updatedStock)
   }
 
-  async delete(stockId: StockDto["id"]): Promise<StockDto> {
+  delete = async (stockId: StockDto["id"]): Promise<StockDto> => {
     const deletedStock = await this.prismaService.stock.delete({
       where: {
         id: stockId,
@@ -104,33 +148,44 @@ export class StockService implements StockContract {
   }
 
   /************** UTILITY METHODS **************/
-  fromCreateDto(createStockDto: CreateStockDto): Stock {
+  private fromRetrieveDto(retrieveStockDto: RetrieveStockDto): Stock {
+    return {
+      id: retrieveStockDto.id,
+      productId: retrieveStockDto.productId,
+      quantity: retrieveStockDto.quantity,
+      updatedAt: undefined,
+    }
+  }
+  private fromCreateDto(createStockDto: CreateStockDto): Stock {
     return {
       id: undefined,
       productId: createStockDto.productId,
-      quantity: createStockDto.quantity,
+      quantity: createStockDto.quantity < 0 ? 0 : createStockDto.quantity,
       updatedAt: undefined,
     }
   }
-  fromUpdateDto(updateStockDto: UpdateStockDto): Stock {
+  private fromUpdateDto(updateStockDto: UpdateStockDto): Stock {
     return {
       id: updateStockDto.id,
+      quantity: updateStockDto.quantity < 0 ? 0 : updateStockDto.quantity,
+      updatedAt: new Date(),
       productId: updateStockDto.productId,
-      quantity: updateStockDto.quantity,
-      updatedAt: undefined,
     }
   }
-  fromDto({ id, productId, quantity, updatedAt }: Partial<StockDto>): Stock {
+  private fromDto({ id, quantity, updatedAt, productId }: StockDto): Stock {
     return {
       id,
-      productId,
       quantity,
       updatedAt,
+      productId,
     }
   }
-  fromModel(stock: Stock): StockDto {
+  private fromModel(stock: Stock): StockDto {
     return {
-      ...stock,
+      id: stock.id,
+      quantity: stock.quantity,
+      updatedAt: stock.updatedAt,
+      productId: stock.productId,
     }
   }
 }

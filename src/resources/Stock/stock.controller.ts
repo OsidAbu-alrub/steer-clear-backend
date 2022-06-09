@@ -2,21 +2,13 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
   HttpStatus,
   Param,
   ParseIntPipe,
   Post,
   Put,
-  Query,
 } from "@nestjs/common"
-import {
-  ApiBody,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-  PickType,
-} from "@nestjs/swagger"
+import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger"
 import { GenericHttpException } from "src/exception/GenericHttpException"
 import { AsyncBaseResponse } from "src/global/BaseResponse"
 import {
@@ -53,53 +45,6 @@ export class StockController {
         statusCode: HttpStatus.OK,
       },
       data: arrayOfStock,
-    }
-  }
-
-  /**
-   * get product quantity from database
-   * @param productId - productId of the product
-   * @returns number - product quantity
-   */
-  @ApiQuery({
-    type: PickType(StockDto, ["productId"]),
-  })
-  @Get("quantity")
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: "Quantity retrieved successfully",
-  })
-  @ApiResponse({
-    status: HttpStatus.NOT_FOUND,
-    description: "Product ID doesn't exist",
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: "Product ID is missing or is not a number",
-  })
-  async retrieveProductQuantity(
-    @Query(
-      "productId",
-      new ParseIntPipe({
-        exceptionFactory: () => {
-          throw new GenericHttpException(
-            "productId is required & must be a number",
-            HttpStatus.BAD_REQUEST,
-          )
-        },
-      }),
-    )
-    productId: StockDto["productId"],
-  ): AsyncBaseResponse<number> {
-    const productQuantity = await this.stockService.retrieveProductQuantity(
-      productId,
-    )
-    return {
-      validation: {
-        message: "",
-        statusCode: HttpStatus.OK,
-      },
-      data: productQuantity,
     }
   }
 
@@ -152,6 +97,10 @@ export class StockController {
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: "Stock ID not provided",
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: "Product not stockable (can't be updated)",
   })
   @Put("update")
   async update(

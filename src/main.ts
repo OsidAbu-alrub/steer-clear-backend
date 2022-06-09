@@ -8,12 +8,13 @@ import { PrismaService } from "./prisma/prisma.service"
 
 async function bootstrap() {
   const PORT = process.env.PORT || 3000
+  const GLOBAL_PREFIX = process.env.GLOBAL_PREFIX || "api/v1"
   const app = await NestFactory.create(AppModule)
-  // const { httpAdapter } = app.get(HttpAdapterHost)
-  app.setGlobalPrefix("api/v1")
-  app.use(helmet())
-  app.useGlobalFilters(new HttpExceptionFilter())
-  // app.useGlobalPipes()
+  app
+    .setGlobalPrefix(GLOBAL_PREFIX)
+    .use(helmet())
+    .useGlobalFilters(new HttpExceptionFilter())
+  // .useGlobalPipes()
 
   const config = new DocumentBuilder()
     .setTitle("Orders Management API")
@@ -23,13 +24,13 @@ async function bootstrap() {
     .addTag(TAGS.CUSTOMER)
     .addTag(TAGS.PRODUCT)
     .addTag(TAGS.PRODUCT_ORDER)
-    .addTag(TAGS.ROLE)
     .addTag(TAGS.STOCK)
+    .addTag(TAGS.ROLE)
     .addTag(TAGS.USER)
     .build()
 
   const document = SwaggerModule.createDocument(app, config)
-  SwaggerModule.setup("api", app, document)
+  SwaggerModule.setup(GLOBAL_PREFIX, app, document)
 
   // comment out these two lines if you don't want
   // to connect to a database
@@ -40,7 +41,7 @@ async function bootstrap() {
   console.log(
     `
 Application started on => http://localhost:${PORT}/
-Swagger started on => http://localhost:9000/api/#/default
+Swagger started on => http://localhost:${PORT}/${GLOBAL_PREFIX}/
 `,
   )
 }

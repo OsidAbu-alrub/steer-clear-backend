@@ -115,8 +115,8 @@ export class ProductService implements ProductContract {
   }: UpdateProductDto): Product {
     return {
       id,
-      price: new Decimal(price),
-      vat: new Decimal(vat),
+      price: price ?? false ? new Decimal(price) : undefined,
+      vat: vat ?? false ? new Decimal(vat) : undefined,
       name: productName,
       slug: description,
       stockable: stockable,
