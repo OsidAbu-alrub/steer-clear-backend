@@ -6,40 +6,40 @@ import { {{pascalCase name}}Dto,  Create{{pascalCase name}}Dto, Update{{pascalCa
 
 @Injectable()
 export class {{pascalCase name}}Service implements {{pascalCase name}}Contract {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) {
+		throw new Error("Method not implemented.")
+	}
 
-	async retrieve(retrieve{{pascalCase name}}Dto: Retrieve{{pascalCase name}}Dto = {}): Promise<Array<{{pascalCase name}}Dto>> {}
+	retrieve = async (retrieve{{pascalCase name}}Dto: Retrieve{{pascalCase name}}Dto = {}): Promise<Array<{{pascalCase name}}Dto>> => {
+			throw new Error("Method not implemented.")
+		}
 
-  async create(create{{pascalCase name}}Dto: Create{{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto> {}
+  create = async (create{{pascalCase name}}Dto: Create{{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto> => {
+		throw new Error("Method not implemented.")
+	}
 
-  async update(update{{pascalCase name}}Dto: Update{{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto> {}
+  update = async (update{{pascalCase name}}Dto: Update{{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto> => {
+		throw new Error("Method not implemented.")
+	}
 
-  async delete({{camelCase name}}Dto: {{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto> {}
+  delete = async ({{camelCase name}}Dto: {{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto> => {
+		throw new Error("Method not implemented.")
+	}
 
 	/************** UTILITY METHODS **************/
-	fromCreateDto(create{{pascalCase name}}Dto: Create{{pascalCase name}}Dto): {{pascalCase name}}{
-		return {
-			...create{{pascalCase name}}Dto,
-		}
+	private fromCreateDto = (create{{pascalCase name}}Dto: Create{{pascalCase name}}Dto): {{pascalCase name}} => {
+			throw new Error("Method not implemented.")
 	}
-  fromUpdateDto(update{{pascalCase name}}Dto: Update{{pascalCase name}}Dto): {{pascalCase name}}{
-		return {
-			...update{{pascalCase name}}Dto,
-		}
+  private fromUpdateDto = (update{{pascalCase name}}Dto: Update{{pascalCase name}}Dto): {{pascalCase name}} => {
+		throw new Error("Method not implemented.")
 	}
-	fromRetrieveDto(retrieve{{pascalCase name}}Dto: Retrieve{{pascalCase name}}Dto): {{pascalCase name}}{
-		return {
-			...retrieve{{pascalCase name}}Dto,
-		}
+	private fromRetrieveDto = (retrieve{{pascalCase name}}Dto: Retrieve{{pascalCase name}}Dto): {{pascalCase name}} => {
+		throw new Error("Method not implemented.")
 	}
-  fromDto({{camelCase name}}Dto: {{pascalCase name}}Dto): {{pascalCase name}}{
-		return {
-			...{{camelCase name}}Dto,
-		}
+  private fromDto = ({{camelCase name}}Dto: {{pascalCase name}}Dto): {{pascalCase name}} => {
+		throw new Error("Method not implemented.")
 	}
-  fromModel({{camelCase name}}: {{pascalCase name}}): {{pascalCase name}}Dto{
-		return {
-			...{{camelCase name}},
-		}
+  private fromModel = ({{camelCase name}}: {{pascalCase name}}): {{pascalCase name}}Dto => {
+		throw new Error("Method not implemented.")
 	}
 }

@@ -1,14 +1,13 @@
-import { {{pascalCase name}} } from "@prisma/client"
-import { {{pascalCase name}}Dto, Create{{pascalCase name}}Dto, Update{{pascalCase name}}Dto, Retrieve{{pascalCase name}}Dto } from "./{{kebabCase name}}.dto"
+import { 
+  {{pascalCase name}}Dto,
+  Create{{pascalCase name}}Dto,
+  Update{{pascalCase name}}Dto,
+  Retrieve{{pascalCase name}}Dto
+} from "./{{kebabCase name}}.dto"
 
 export default interface {{pascalCase name}}Contract {
 	retrieve({{camelCase name}}Dto?: Retrieve{{pascalCase name}}Dto): Promise<Array<{{pascalCase name}}Dto>>
   create(create{{pascalCase name}}Dto: Create{{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto>
   update(update{{pascalCase name}}Dto: Update{{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto>
   delete({{camelCase name}}Dto: {{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto>
-  fromCreateDto(create{{pascalCase name}}Dto: Create{{pascalCase name}}Dto): {{pascalCase name}}
-  fromUpdateDto(update{{pascalCase name}}Dto: Update{{pascalCase name}}Dto): {{pascalCase name}}
-  fromRetrieveDto(retrieve{{pascalCase name}}Dto: Retrieve{{pascalCase name}}Dto): {{pascalCase name}}
-  fromDto({{camelCase name}}Dto: {{pascalCase name}}Dto): {{pascalCase name}}
-  fromModel({{camelCase name}}: {{pascalCase name}}): {{pascalCase name}}Dto
 }
