@@ -1,0 +1,13 @@
+import { 
+  {{pascalCase name}}Dto,
+  Create{{pascalCase name}}Dto,
+  Update{{pascalCase name}}Dto,
+  Retrieve{{pascalCase name}}Dto
+} from "./{{kebabCase name}}.dto"
+
+export default interface {{pascalCase name}}Contract {
+	retrieve({{camelCase name}}Dto?: Retrieve{{pascalCase name}}Dto): Promise<Array<{{pascalCase name}}Dto>>
+  create(create{{pascalCase name}}Dto: Create{{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto>
+  update(update{{pascalCase name}}Dto: Update{{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto>
+  delete({{camelCase name}}Dto: {{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto>
+}

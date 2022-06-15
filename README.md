@@ -11,45 +11,42 @@
 
 ## Description
 
-This is a starter project that you can use as a [NestJS](https://github.com/nestjs/nest) template with [Prisma](https://www.prisma.io/docs/)
-
-## Installation
-
-- Clone the repo
-
-```bash
-$ git clone git@github.com:OsidAbu-alrub/nestjs-prisma-template.git
-```
-
-- Change origin url to point to your own repo
-
-```bash
-$ git remote set-url origin <remote_url>
-```
-
-- Install deps
-
 ```bash
 $ yarn install
+$ yarn build
+$ yarn start
 ```
 
-## Running the app
+## Create and run docker image
+
+**Not that this won't work because database is not configured to run with container**<br/>
+First navigate into directory that contains `dockerFile` (root directory). Then run the following command to build the image
 
 ```bash
-# development
-$ yarn dev
+$ # docker build -t <image-name> .
+$ docker build -t orders-management .
 ```
 
-## Resource directory structure
+Run this command to check available images
 
-This structure must come under the src directory:
+```bash
+$ docker images
+```
 
-- resource/
-  - **resource.contract.ts** => interface that contains methods that should be implemented in the resource.service file
-  - **resource.controller.ts**
-  - **resource.dto.ts**
-  - **resource.module.ts**
-  - **resource.service.ts** => must implement IMapper & resource.contract interface
+Run this command start up a new container
+
+```bash
+$ # docker run --name <container-name> -p <application-port>:<container-port> <image-name>
+$ docker run --name orders-management-container -p 127.0.0.1:9000:9000 orders-management
+```
+
+Run this command to check running containers
+
+```bash
+$ docker ps
+```
+
+Run this command to stop running container
 
 **P.S. You get models from prisma client after generating database**
 
@@ -89,8 +86,6 @@ $ npx prisma generate
 
 Coming Soon!
 
-## TODOS
+## Link to docker hub image
 
-- Add [global error filtering](https://docs.nestjs.com/exception-filters)
-- Add ability to generate folder with contract, controller, dto, module, and service with package.json scripts (use blobs)
-- Add documentation for db generation commands
+https://hub.docker.com/r/abualrub/orders-management
