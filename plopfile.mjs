@@ -11,11 +11,11 @@ export default function (plop) {
       },
     ],
     actions: [
-      {
-        type: "add",
-        path: "src/resources/{{pascalCase name}}/{{kebabCase name}}.contract.ts",
-        templateFile: "plop-templates/contract.hbs",
-      },
+      // {
+      //   type: "add",
+      //   path: "src/resources/{{pascalCase name}}/{{kebabCase name}}.contract.ts",
+      //   templateFile: "plop-templates/contract.hbs",
+      // },
       {
         type: "add",
         path: "src/resources/{{pascalCase name}}/{{kebabCase name}}.controller.ts",

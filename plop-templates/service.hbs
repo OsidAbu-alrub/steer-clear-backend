@@ -1,11 +1,10 @@
 import { {{pascalCase name}} } from "@prisma/client"
 import { Injectable } from "@nestjs/common"
 import { PrismaService } from "src/prisma/prisma.service"
-import {{pascalCase name}}Contract from "./{{kebabCase name}}.contract"
 import { {{pascalCase name}}Dto,  Create{{pascalCase name}}Dto, Update{{pascalCase name}}Dto, Retrieve{{pascalCase name}}Dto } from "./{{kebabCase name}}.dto"
 
 @Injectable()
-export class {{pascalCase name}}Service implements {{pascalCase name}}Contract {
+export class {{pascalCase name}}Service {
   constructor(private readonly prismaService: PrismaService) {}
 
 	retrieve = async (retrieve{{pascalCase name}}Dto: Retrieve{{pascalCase name}}Dto = {}): Promise<Array<{{pascalCase name}}Dto>> => {
@@ -21,23 +20,6 @@ export class {{pascalCase name}}Service implements {{pascalCase name}}Contract {
 	}
 
   delete = async ({{camelCase name}}Dto: {{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto> => {
-		throw new Error("Method not implemented.")
-	}
-
-	/************** UTILITY METHODS **************/
-	private fromCreateDto = (create{{pascalCase name}}Dto: Create{{pascalCase name}}Dto): {{pascalCase name}} => {
-			throw new Error("Method not implemented.")
-	}
-  private fromUpdateDto = (update{{pascalCase name}}Dto: Update{{pascalCase name}}Dto): {{pascalCase name}} => {
-		throw new Error("Method not implemented.")
-	}
-	private fromRetrieveDto = (retrieve{{pascalCase name}}Dto: Retrieve{{pascalCase name}}Dto): {{pascalCase name}} => {
-		throw new Error("Method not implemented.")
-	}
-  private fromDto = ({{camelCase name}}Dto: {{pascalCase name}}Dto): {{pascalCase name}} => {
-		throw new Error("Method not implemented.")
-	}
-  private fromModel = ({{camelCase name}}: {{pascalCase name}}): {{pascalCase name}}Dto => {
 		throw new Error("Method not implemented.")
 	}
 }

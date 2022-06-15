@@ -1,13 +1,20 @@
-import { PostComment as Comment, PostLike as Like, User } from "@prisma/client"
+import {
+  Post,
+  PostComment as Comment,
+  PostLike as Like,
+  User,
+} from "@prisma/client"
 
-export interface PostDto {
+export class PostDto implements Post {
+  userId: string
   id: string
   createdBy: string
   createdOn: Date
   title: string
   body: string
-  comments?: Comment[]
-  likes?: Like[]
+  user: User
+  comments: Comment[]
+  likes: Like[]
 }
 
 export type CreatePostDto = {

@@ -1,21 +1,34 @@
-import { ApiProperty, OmitType, PartialType } from "@nestjs/swagger"
+import { User as UserModel } from "@prisma/client"
 
-export class UserDto {
-  @ApiProperty()
-  id: number
-  @ApiProperty()
+export default class User implements UserModel {
+  id: string
+  firstName: string
+  lastName: string
+  phoneNumber: string
   email: string
-  @ApiProperty()
   password: string
-  @ApiProperty({
-    default: false,
-    required: false,
-  })
-  isAdmin: boolean
+  bio: string
 }
-export class RetrieveUserDto extends PartialType(UserDto) {}
-export class CreateUserDto extends OmitType(UserDto, ["id"]) {}
-export class UpdateUserDto extends PartialType(OmitType(UserDto, ["id"])) {
-  @ApiProperty()
-  id: number
+export class UserDto implements User {
+  id: string
+  firstName: string
+  lastName: string
+  phoneNumber: string
+  email: string
+  password: string
+  bio: string
+}
+
+export class CreateUserDto {
+  firstName: string
+  lastName: string
+  phoneNumber: string
+  email: string
+  password: string
+  bio: string
+}
+
+export class UserLoginDto {
+  email: string
+  password: string
 }

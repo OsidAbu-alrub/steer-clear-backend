@@ -7,9 +7,8 @@ import { GenericHttpException } from "src/exception/GenericHttpException"
 dotenv.config()
 
 export class JwtPayload {
-  isAdmin: boolean
   email: string
-  sub: number
+  sub: string
   iat?: number
   exp?: number
 }

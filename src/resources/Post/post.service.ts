@@ -30,6 +30,10 @@ export class PostService {
       createdBy: userId,
       id,
       title,
+      comments: [],
+      likes: [],
+      user: undefined,
+      userId: undefined,
     }
   }
 
@@ -45,7 +49,7 @@ export class PostService {
 
   toPostFeedDto = ({
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    user: { password: _, ...user },
+    user,
     ...post
   }: Post & {
     user: User

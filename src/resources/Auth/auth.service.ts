@@ -3,7 +3,6 @@ import { JwtService } from "@nestjs/jwt"
 import { Response } from "express"
 import { GenericHttpException } from "src/exception/GenericHttpException"
 import { JwtPayload } from "src/jwt/jwt.strategy"
-import { CustomerService } from "../Customer/customer.service"
 import { UserService } from "../User/user.service"
 import AuthContract from "./auth.contract"
 import { LoginAuthDto, RegisterAuthDto } from "./auth.dto"
@@ -13,7 +12,6 @@ import { comparePasswords } from "./auth.utils"
 export class AuthService implements AuthContract {
   constructor(
     private readonly userService: UserService,
-    private readonly customerService: CustomerService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -21,11 +19,7 @@ export class AuthService implements AuthContract {
     { email, password }: LoginAuthDto,
     response: Response,
   ): Promise<boolean> => {
-    const user = (
-      await this.userService.retrieve({
-        email,
-      })
-    )[0]
+    const user = (await this.userService.getAllUsers())[0]
 
     if (!user) {
       throw new GenericHttpException(
@@ -43,7 +37,6 @@ export class AuthService implements AuthContract {
 
     const payload: JwtPayload = {
       email: user.email,
-      isAdmin: user.isAdmin,
       sub: user.id,
     }
 
@@ -69,10 +62,13 @@ export class AuthService implements AuthContract {
     }: RegisterAuthDto,
     response: Response,
   ): Promise<boolean> => {
-    const user = await this.userService.create({
+    const user = await this.userService.createUser({
       email,
       password,
-      isAdmin,
+      bio: "",
+      firstName: "Test",
+      lastName: "Test",
+      phoneNumber: "123123123",
     })
     await this.customerService.create({
       userId: user.id,
