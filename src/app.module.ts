@@ -4,11 +4,9 @@ import { PrismaModule } from "src/prisma/prisma.module"
 import { PostModule } from "./resources/Post/post.module"
 import { UserModule } from "./resources/User/user.module"
 
-import { APP_GUARD } from "@nestjs/core"
-import { CoreModule } from "./jwt/jwt.module"
-import { RolesGuard } from "./roles/roles.guard"
-import { AutomapperModule } from "@automapper/nestjs"
 import { classes } from "@automapper/classes"
+import { AutomapperModule } from "@automapper/nestjs"
+import { CoreModule } from "./jwt/jwt.module"
 // this is the entry point
 // if you dont import modules here, you will not be able
 // to use them in your application
@@ -22,12 +20,6 @@ import { classes } from "@automapper/classes"
     PostModule,
     UserModule,
     CoreModule,
-  ],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
   ],
 })
 export class AppModule {}
