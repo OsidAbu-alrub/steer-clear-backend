@@ -1,6 +1,7 @@
 import { User as UserModel } from "@prisma/client"
 
 export default class User implements UserModel {
+  image: Buffer
   id: string
   firstName: string
   lastName: string
@@ -9,7 +10,8 @@ export default class User implements UserModel {
   password: string
   bio: string
 }
-export class UserDto implements User {
+export class UserDto {
+  image?: string
   id: string
   firstName: string
   lastName: string

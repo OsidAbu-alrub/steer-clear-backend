@@ -22,4 +22,21 @@ export class {{pascalCase name}}Service {
   delete = async ({{camelCase name}}Dto: {{pascalCase name}}Dto): Promise<{{pascalCase name}}Dto> => {
 		throw new Error("Method not implemented.")
 	}
+
+	/************** UTILITY METHODS **************/
+	private fromCreateDto = (create{{pascalCase name}}Dto: Create{{pascalCase name}}Dto): {{pascalCase name}} => {
+			throw new Error("Method not implemented.")
+	}
+  private fromUpdateDto = (update{{pascalCase name}}Dto: Update{{pascalCase name}}Dto): {{pascalCase name}} => {
+		throw new Error("Method not implemented.")
+	}
+	private fromRetrieveDto = (retrieve{{pascalCase name}}Dto: Retrieve{{pascalCase name}}Dto): {{pascalCase name}} => {
+		throw new Error("Method not implemented.")
+	}
+  private fromDto = ({{camelCase name}}Dto: {{pascalCase name}}Dto): {{pascalCase name}} => {
+		throw new Error("Method not implemented.")
+	}
+  private fromModel = ({{camelCase name}}: {{pascalCase name}}): {{pascalCase name}}Dto => {
+		throw new Error("Method not implemented.")
+	}
 }

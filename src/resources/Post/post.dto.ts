@@ -1,5 +1,6 @@
 import {
   Post,
+  PostCategory as Category,
   PostComment as Comment,
   PostLike as Like,
   User,
@@ -12,6 +13,7 @@ export class PostDto implements Post {
   createdOn: Date
   title: string
   body: string
+  isLiked: boolean
   user: User
   comments: Comment[]
   likes: Like[]
@@ -25,6 +27,26 @@ export type CreatePostDto = {
   body: string
 }
 
-export type PostFeedDto = PostDto & {
-  user: Omit<User, "password">
+export class PostFeedDto {
+  isLiked: boolean
+  id: string
+  userId: string
+  title: string
+  body: string
+  createdOn: Date
+  user: User
+  comments: Comment[]
+  categories: Category
+  likes: Like[]
+}
+
+export class CreateCommentDto {
+  userId: string
+  postId: string
+  body: string
+}
+
+export class LikeDto {
+  userId: string
+  postId: string
 }

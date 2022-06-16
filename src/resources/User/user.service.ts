@@ -1,21 +1,14 @@
-import { createMap, Mapper, MappingProfile } from "@automapper/core"
-import { AutomapperProfile, InjectMapper } from "@automapper/nestjs"
 import { HttpStatus, Injectable } from "@nestjs/common"
 import { GenericHttpException } from "src/exception/GenericHttpException"
+import { toBase64String } from "src/global/utils"
 import { PrismaService } from "src/prisma/prisma.service"
-import User, { CreateUserDto, UserDto, UserLoginDto } from "./user.dto"
+import { CreateUserDto, UserLoginDto } from "./user.dto"
 
 @Injectable()
-export class UserService extends AutomapperProfile {
-  constructor(
-    @InjectMapper() mapper: Mapper,
-    private readonly prismaService: PrismaService,
-  ) {
-    super(mapper)
-  }
+export class UserService {
+  constructor(private readonly prismaService: PrismaService) {}
 
   async createUser(user: CreateUserDto) {
-    console.log(this.mapper.map(user, CreateUserDto, User))
     const isUserCreated = await this.prismaService.user.findUnique({
       where: {
         email: user.email,
@@ -33,12 +26,15 @@ export class UserService extends AutomapperProfile {
         ...user,
       },
     })
-    return createdUserModel
+    return {
+      ...createdUserModel,
+      image: null,
+    }
   }
 
   async getAllUsers() {
     const users = await this.prismaService.user.findMany()
-    return users
+    return users.map((user) => ({ ...user, image: toBase64String(user.image) }))
   }
 
   async login(userLogin: UserLoginDto) {
@@ -62,13 +58,19 @@ export class UserService extends AutomapperProfile {
       )
     }
 
-    return user
+    return { ...user, image: toBase64String(user.image) }
   }
 
-  get profile(): MappingProfile {
-    return (mapper) => {
-      createMap(mapper, User, CreateUserDto)
-      createMap(mapper, User, UserDto)
-    }
+  uploadImage = async (file: Express.Multer.File, userId: string) => {
+    await this.prismaService.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        image: file.buffer,
+      },
+    })
+
+    return "Image uploaded successfully"
   }
 }

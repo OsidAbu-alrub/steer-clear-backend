@@ -15,6 +15,7 @@ model User {
   email       String        @unique
   password    String
   bio         String
+  image       Bytes?        @map("image")
   posts       Post[]
   comments    PostComment[]
   likedPosts  PostLike[]
