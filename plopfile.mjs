@@ -11,11 +11,6 @@ export default function (plop) {
       },
     ],
     actions: [
-      // {
-      //   type: "add",
-      //   path: "src/resources/{{pascalCase name}}/{{kebabCase name}}.contract.ts",
-      //   templateFile: "plop-templates/contract.hbs",
-      // },
       {
         type: "add",
         path: "src/resources/{{pascalCase name}}/{{kebabCase name}}.controller.ts",
@@ -26,12 +21,6 @@ export default function (plop) {
         path: "src/resources/{{pascalCase name}}/{{kebabCase name}}.dto.ts",
         templateFile: "plop-templates/dto.hbs",
       },
-      // TODO: Add this when needed
-      // {
-      //   type: "add",
-      //   path: "src/resources/{{pascalCase name}}/{{kebabCase name}}.model.ts",
-      //   templateFile: "plop-templates/model.hbs",
-      // },
       {
         type: "add",
         path: "src/resources/{{pascalCase name}}/{{kebabCase name}}.module.ts",

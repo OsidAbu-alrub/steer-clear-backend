@@ -1,8 +1,7 @@
 import { PartialType } from "@nestjs/swagger"
 import { PostComment, User } from "@prisma/client"
 import { IsDefined, IsString } from "class-validator"
-
-type UserWithStringImage = Omit<User, "image"> & { image: string | null }
+import { UserDto } from "../User/user.dto"
 
 export class CommentDto {
   id: string
@@ -10,7 +9,7 @@ export class CommentDto {
   postId: string
   body: string
   createdOn: Date
-  user: UserWithStringImage
+  user: UserDto
 }
 
 export class RetrieveCommentDto extends PartialType(CommentDto) {}

@@ -8,6 +8,7 @@ import { CommentModule } from "./resources/Comment/comment.module"
 import { GoogleDriveModule } from "./google-drive/google-drive.module"
 import { CategoryModule } from "./resources/Category/category.module"
 import { ContinentModule } from "./resources/Continent/continent.module"
+import { ProductModule } from "./resources/Product/product.module"
 // this is the entry point
 // if you dont import modules here, you will not be able
 // to use them in your application
@@ -22,6 +23,7 @@ import { ContinentModule } from "./resources/Continent/continent.module"
     GoogleDriveModule,
     CategoryModule,
     ContinentModule,
+    ProductModule,
   ],
 })
 export class AppModule {}

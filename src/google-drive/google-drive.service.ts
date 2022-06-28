@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common"
 import { google } from "googleapis"
 import { GoogleCloudConfigService } from "src/google-cloud-config/google-cloud-config.service"
+import { Readable } from "stream"
 
 @Injectable()
 export class GoogleDriveService {
@@ -8,69 +9,73 @@ export class GoogleDriveService {
     private readonly googleCloudConfigService: GoogleCloudConfigService,
   ) {}
 
-  updateFile = async (fileId: string, file: Express.Multer.File) => {
+  updateFile = async (file: Express.Multer.File, fileId: string) => {
     const oauth2Client = await this.googleCloudConfigService.getOuth2Client()
     const drive = google.drive({ version: "v3", auth: oauth2Client })
+
+    const fileAsReadableStream = Readable.from(file.buffer)
     const requestBody = {
-      name: fileId,
-      mimeType: "image/jpg",
-      parents: [process.env.GOOGLE_DRIVE_PARENT_FOLDER_ID],
+      name: this.getFileName(file),
+      mimeType: "image/jpeg",
     }
     const media = {
-      mimeType: "image/jpg",
-      body: file,
+      mimeType: "image/jpeg",
+      body: fileAsReadableStream,
     }
     const res = await drive.files.update({
       fileId,
       requestBody,
       media,
+      addParents: `${process.env.GOOGLE_DRIVE_PARENT_FOLDER_ID}`,
     })
-
-    console.log(res.data.id)
     return res.data.id
   }
 
   createFile = async (file: Express.Multer.File) => {
     const oauth2Client = await this.googleCloudConfigService.getOuth2Client()
     const drive = google.drive({ version: "v3", auth: oauth2Client })
+    const fileAsReadableStream = Readable.from(file.buffer)
+
     const requestBody = {
-      mimeType: "image/jpg",
+      name: this.getFileName(file),
+      mimeType: "image/jpeg",
       parents: [process.env.GOOGLE_DRIVE_PARENT_FOLDER_ID],
     }
     const media = {
-      mimeType: "image/jpg",
-      body: file,
+      mimeType: "image/jpeg",
+      body: fileAsReadableStream,
     }
     const res = await drive.files.create({
       requestBody,
       media,
     })
 
-    console.log(res.data.id)
     return res.data.id
   }
 
-  // getFileId = async (): Promise<string[]> => {
-  //   const oauth2Client = await this.googleCloudConfigService.getOuth2Client()
-  //   const drive = google.drive({
-  //     version: "v3",
-  //     auth: oauth2Client,
-  //   })
-  //   const res = await drive.files.list({
-  //     q: `'${process.env.GOOGLE_DRIVE_PARENT_FOLDER_ID}' in parents`,
-  //     spaces: "drive",
-  //   })
+  getFileId = async (): Promise<void> => {
+    const oauth2Client = await this.googleCloudConfigService.getOuth2Client()
+    const drive = google.drive({
+      version: "v3",
+      auth: oauth2Client,
+    })
+    const res = await drive.files.list({
+      q: `'${process.env.GOOGLE_DRIVE_PARENT_FOLDER_ID}' in parents`,
+      spaces: "drive",
+    })
 
-  //   const imageURLs = res.data.files.map((file) =>
-  //     this.getPublicViewURL(file.id),
-  //   )
+    const imageURLs = res.data.files.find(
+      (file) => file.id === "19278nm5PZaPiJE_WBKljd0qEps4ZPCt-",
+    )
+    console.log(imageURLs)
+    // return imageURLs
+  }
 
-  //   drive.files.create({})
-  //   return imageURLs
-  // }
-
-  // ************ UTILITY METHODS ************ //
   getPublicViewURL = (fileId: string) => {
     return `https://drive.google.com/uc?id=${fileId}`
   }
+
+  // ************ UTILITY METHODS ************ //
+  private getFileName = (file: Express.Multer.File) =>
+    `IMG_${new Date().toISOString()}_${file.originalname}`
 }

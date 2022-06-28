@@ -9,7 +9,7 @@ import {
 
 export default class User {
   @ApiProperty()
-  image: string | null
+  imageId: string | null
   @ApiProperty()
   id: string
   @ApiProperty()

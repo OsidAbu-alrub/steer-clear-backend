@@ -4,6 +4,7 @@ import { GoogleDriveService } from "./google-drive.service"
 
 @Module({
   imports: [GoogleCloudConfigModule],
+  providers: [GoogleDriveService],
   exports: [GoogleDriveService],
 })
 export class GoogleDriveModule {}

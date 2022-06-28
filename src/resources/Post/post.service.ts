@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common"
 import { Post } from "@prisma/client"
-import { toBase64String } from "src/global/utils"
+import { GoogleDriveService } from "src/google-drive/google-drive.service"
 import { PrismaService } from "src/prisma/prisma.service"
 import {
   CreatePostDto,
@@ -11,7 +11,10 @@ import {
 
 @Injectable()
 export class PostService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly googleDriveService: GoogleDriveService,
+  ) {}
   async createPost(post: CreatePostDto): Promise<PostDto> {
     const postModel = this.fromCreatePostDto(post)
     const createdPost = await this.prismaService.post.create({
@@ -20,17 +23,17 @@ export class PostService {
     return this.fromModel(createdPost)
   }
 
-  getUserPosts = async (userId: string) => {
+  getUserPosts = async (userId: string, postUserId = "") => {
     const userPosts = await this.prismaService.post.findMany({
       where: {
-        userId,
+        userId: postUserId || userId,
       },
       include: {
         user: true,
         likes: true,
       },
       orderBy: {
-        createdOn: "asc",
+        createdOn: "desc",
       },
     })
 
@@ -217,7 +220,11 @@ export class PostService {
       userId: postWithUserAndLikesModel.user.id,
       likes: postWithUserAndLikesModel.likes,
       user: {
-        image: toBase64String(postWithUserAndLikesModel.user.image),
+        image: postWithUserAndLikesModel.user.imageId
+          ? this.googleDriveService.getPublicViewURL(
+              postWithUserAndLikesModel.user.imageId,
+            )
+          : null,
         id: postWithUserAndLikesModel.user.id,
         bio: postWithUserAndLikesModel.user.bio,
         email: postWithUserAndLikesModel.user.email,

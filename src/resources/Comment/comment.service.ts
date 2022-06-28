@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common"
 import { PostComment as Comment } from "@prisma/client"
-import { toBase64String } from "src/global/utils"
+import { GoogleDriveService } from "src/google-drive/google-drive.service"
 import { PrismaService } from "src/prisma/prisma.service"
 import {
   CommentDto,
@@ -11,7 +11,10 @@ import {
 
 @Injectable()
 export class CommentService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly googleDriveService: GoogleDriveService,
+  ) {}
 
   retrieve = async (
     retrieveCommentDto: RetrieveCommentDto = {},
@@ -92,7 +95,11 @@ export class CommentService {
       postId: commentWithUserModel.postId,
       userId: commentWithUserModel.userId,
       user: {
-        image: toBase64String(commentWithUserModel.user.image),
+        image: commentWithUserModel.user.imageId
+          ? this.googleDriveService.getPublicViewURL(
+              commentWithUserModel.user.imageId,
+            )
+          : null,
         id: commentWithUserModel.user.id,
         bio: commentWithUserModel.user.bio,
         email: commentWithUserModel.user.email,

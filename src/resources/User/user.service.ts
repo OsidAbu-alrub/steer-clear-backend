@@ -3,7 +3,6 @@ import { JwtService } from "@nestjs/jwt"
 import { User } from "@prisma/client"
 import { Response } from "express"
 import { GenericHttpException } from "src/exception/GenericHttpException"
-import { toBase64String } from "src/global/utils"
 import { GoogleDriveService } from "src/google-drive/google-drive.service"
 import { JwtPayload } from "src/jwt/jwt.strategy"
 import { PrismaService } from "src/prisma/prisma.service"
@@ -126,18 +125,29 @@ export class UserService {
     if (file.size > MAX_FILE_SIZE)
       throw new GenericHttpException("Max size is 2MB", HttpStatus.BAD_REQUEST)
 
-    const userDto = await this.findUser({ id: userId })
+    const { imageId } = await this.prismaService.user.findUnique({
+      where: { id: userId },
+      select: {
+        imageId: true,
+      },
+      rejectOnNotFound: () => {
+        throw new GenericHttpException("User not found", HttpStatus.NOT_FOUND)
+      },
+    })
 
-    if (userDto.image) await this.googleDriveService.updateFile(file)
+    const userImageId = imageId
+      ? await this.googleDriveService.updateFile(file, imageId)
+      : await this.googleDriveService.createFile(file)
+
     await this.prismaService.user.update({
       where: {
         id: userId,
       },
       data: {
-        image: "",
+        imageId: userImageId,
       },
     })
-    return "Image uploaded successfully"
+    return userImageId
   }
 
   // ************ UTILITY METHODS ************ //
@@ -169,8 +179,16 @@ export class UserService {
 
   fromModel(user: User): UserDto {
     return {
-      ...user,
-      image: toBase64String(user.image),
+      bio: user.bio,
+      email: user.email,
+      firstName: user.firstName,
+      id: user.id,
+      lastName: user.lastName,
+      phoneNumber: user.phoneNumber,
+      password: user.password,
+      image: user.imageId
+        ? this.googleDriveService.getPublicViewURL(user.imageId)
+        : null,
     }
   }
 }

@@ -77,7 +77,7 @@ model Product {
   categoryId  String    @map("category_id")
   barcode     String    @unique @map("barcode")
   name        String    @map("name")
-  image       String    @map("image")
+  imageId     String?   @map("image_id")
   continent   Continent @relation(fields: [continentId], references: [id], onDelete: Cascade)
   category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
