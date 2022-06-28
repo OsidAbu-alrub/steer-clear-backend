@@ -14,16 +14,25 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>()
     const request = ctx.getRequest<Request>()
     const statusCode = exception.getStatus()
-    const exceptionResponse = exception.getResponse()
+    const exceptionResponse = exception.getResponse() as any
     console.log(exceptionResponse)
     const responseBody: BaseResponse<{ timestamp: string; path: string }> = {
       validation: {
         message:
           exceptionResponse && typeof exceptionResponse === "string"
-            ? (exceptionResponse as string)
+            ? exceptionResponse
+            : exceptionResponse &&
+              typeof exceptionResponse === "object" &&
+              "message" in exceptionResponse &&
+              exceptionResponse.message instanceof Array
+            ? exceptionResponse.message.join(", ")
             : typeof exceptionResponse === "object" &&
               "error" in exceptionResponse
-            ? (exceptionResponse as any).error
+            ? exceptionResponse.error
+            : exceptionResponse &&
+              typeof exceptionResponse === "object" &&
+              "message" in exceptionResponse
+            ? exceptionResponse.message
             : "Error occurred",
         statusCode,
       },

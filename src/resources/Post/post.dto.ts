@@ -1,52 +1,40 @@
-import {
-  Post,
-  PostCategory as Category,
-  PostComment as Comment,
-  PostLike as Like,
-  User,
-} from "@prisma/client"
+import { Post, PostLike as Like, PostLike, User } from "@prisma/client"
+import { IsDate, IsDefined, IsString } from "class-validator"
 
-export class PostDto implements Post {
+type UserWithStringImage = Omit<User, "image"> & { image: string | null }
+
+export class PostDto {
+  @IsString()
   userId: string
+  @IsString()
   id: string
-  createdBy: string
+  @IsDate()
   createdOn: Date
   title: string
   body: string
   isLiked: boolean
-  user: User
-  comments: Comment[]
-  likes: Like[]
+  user: UserWithStringImage
+  likes?: Like[]
 }
 
-export type CreatePostDto = {
-  id?: string
-  createdBy: string
-  createdOn?: Date
-  title: string
-  body: string
-}
-
-export class PostFeedDto {
-  isLiked: boolean
-  id: string
+export class CreatePostDto {
+  @IsString()
+  @IsDefined()
   userId: string
+  @IsString()
+  @IsDefined()
   title: string
-  body: string
-  createdOn: Date
-  user: User
-  comments: Comment[]
-  categories: Category
-  likes: Like[]
-}
-
-export class CreateCommentDto {
-  userId: string
-  postId: string
+  @IsString()
+  @IsDefined()
   body: string
 }
 
 export class LikeDto {
   userId: string
   postId: string
+}
+
+export type PostWithUserAndLikesModel = Post & {
+  user: User
+  likes: PostLike[]
 }

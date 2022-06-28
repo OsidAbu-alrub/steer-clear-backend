@@ -6,7 +6,7 @@ export const getValidDate = (date: unknown): Date | undefined => {
 }
 
 export const toBase64String = (image: ArrayBuffer): string => {
-  return !image ? null : Buffer.from(image).toString("base64")
+  return image ? Buffer.from(image).toString("base64") : null
 }
 
 export const fromBase64String = (base64String: string) => {

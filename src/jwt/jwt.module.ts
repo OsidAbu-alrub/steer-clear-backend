@@ -4,11 +4,10 @@ import { JwtModule } from "@nestjs/jwt"
 @Global()
 @Module({
   imports: [
-    JwtModule.register({
-      secret: process.env.SECRET_KEY + "",
-      signOptions: {
-        expiresIn: "60s",
-      },
+    JwtModule.registerAsync({
+      useFactory: () => ({
+        secret: process.env.SECRET_KEY + "",
+      }),
     }),
   ],
   exports: [JwtModule],

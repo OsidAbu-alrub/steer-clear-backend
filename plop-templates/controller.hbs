@@ -31,6 +31,31 @@ export class {{pascalCase name}}Controller {
   }
 
   /**
+   * Get first {{pascalCase name}} object from database
+    * @param retrieve{{pascalCase name}}Dto - object that the retrieval query is based on
+   * @returns {{pascalCase name}} - Get first {{pascalCase name}} object from the database
+   */
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "{{pascalCase name}} retrieved successfully",
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: "{{pascalCase name}} not found",
+  })
+  @Post("retrieve-first")
+  async retrieveFirst(@Body() retrieve{{pascalCase name}}Dto: Retrieve{{pascalCase name}}Dto): AsyncBaseResponse<{{pascalCase name}}Dto> {
+    const {{camelCase name}} = await this.{{camelCase name}}Service.retrieveFirst(retrieve{{pascalCase name}}Dto)
+    return {
+      validation: {
+        message: "",
+        statusCode: HttpStatus.OK,
+      },
+      data: {{camelCase name}},
+    }
+  }
+
+  /**
    * creates a {{pascalCase name}} and stores it in the database
    *
    * @param create{{pascalCase name}}Dto - {{pascalCase name}} to be created

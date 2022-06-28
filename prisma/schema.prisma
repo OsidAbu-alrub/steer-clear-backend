@@ -15,7 +15,7 @@ model User {
   email       String        @unique
   password    String
   bio         String
-  image       Bytes?        @map("image")
+  imageId     String?       @map("image_id")
   posts       Post[]
   comments    PostComment[]
   likedPosts  PostLike[]
@@ -24,21 +24,21 @@ model User {
 }
 
 model Post {
-  id         String        @id @default(uuid())
-  userId     String        @map("user_id")
-  title      String
-  body       String
-  createdOn  DateTime      @default(now()) @map("created_on")
-  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  categories PostCategory?
-  comments   PostComment[]
-  likes      PostLike[]
+  id        String        @id @default(uuid())
+  userId    String        @map("user_id")
+  title     String
+  body      String
+  createdOn DateTime      @default(now()) @map("created_on")
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments  PostComment[]
+  likes     PostLike[]
 
   @@index([userId], map: "post_user_id_fkey")
   @@map("post")
 }
 
 model PostComment {
+  id        String   @id @default(uuid()) @map("id")
   userId    String   @map("user_id")
   postId    String   @map("post_id")
   body      String
@@ -46,38 +46,48 @@ model PostComment {
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([userId, postId])
   @@index([postId], map: "post_comment_post_id_fkey")
   @@map("post_comment")
 }
 
-model Category {
-  id          String         @id @default(uuid())
-  title       String         @unique
-  description String
-  posts       PostCategory[]
-
-  @@map("category")
-}
-
-model PostCategory {
-  categoryId String   @map("category_id")
-  postId     String   @unique @map("post_id")
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-  @@id([categoryId, postId])
-  @@map("post_category")
-}
-
 model PostLike {
+  id      String   @id @default(uuid()) @map("id")
   userId  String   @map("user_id")
   postId  String   @map("post_id")
   likedAt DateTime @default(now()) @map("liked_at")
   post    Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([userId, postId])
   @@index([postId], map: "post_like_post_id_fkey")
   @@map("post_like")
+}
+
+model Category {
+  id          String @id @default(uuid()) @map("id")
+  title       String @unique @map("title")
+  description String @map("description")
+
+  Product Product[]
+  @@map("category")
+}
+
+model Product {
+  id          String    @id @default(uuid()) @map("id")
+  continentId String    @map("continent_id")
+  categoryId  String    @map("category_id")
+  barcode     String    @unique @map("barcode")
+  name        String    @map("name")
+  image       String    @map("image")
+  continent   Continent @relation(fields: [continentId], references: [id], onDelete: Cascade)
+  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@map("product")
+}
+
+model Continent {
+  id       String    @id @default(uuid()) @map("id")
+  name     String    @map("name")
+  products Product[]
+
+  @@map("continent")
 }

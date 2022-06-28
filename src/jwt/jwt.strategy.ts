@@ -1,16 +1,15 @@
 import { HttpStatus, Injectable } from "@nestjs/common"
 import { PassportStrategy } from "@nestjs/passport"
-import * as dotenv from "dotenv"
 import { Request } from "express"
 import { ExtractJwt, Strategy } from "passport-jwt"
 import { GenericHttpException } from "src/exception/GenericHttpException"
-dotenv.config()
 
 export class JwtPayload {
   email: string
+  password: string
   sub: string
-  iat?: number
-  exp?: number
+  iat: number
+  exp: number
 }
 
 @Injectable()
@@ -19,10 +18,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
-          const data = request.cookies["jwt"]
+          const data = request.cookies[process.env.JWT_COOKIE_NAME]
           if (!data) {
             throw new GenericHttpException(
-              "Must login!",
+              "You must login first!",
               HttpStatus.UNAUTHORIZED,
             )
           }

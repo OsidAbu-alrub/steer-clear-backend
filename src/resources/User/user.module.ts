@@ -1,9 +1,12 @@
 import { Module } from "@nestjs/common"
-import { UserService } from "./user.service"
+import { GoogleDriveModule } from "src/google-drive/google-drive.module"
+import { JwtStrategy } from "src/jwt/jwt.strategy"
 import { UserController } from "./user.controller"
+import { UserService } from "./user.service"
 
 @Module({
-  providers: [UserService],
+  imports: [GoogleDriveModule],
+  providers: [UserService, JwtStrategy],
   controllers: [UserController],
 })
 export class UserModule {}

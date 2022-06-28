@@ -1,15 +1,18 @@
-import { Body, Controller, Get, HttpStatus, Post, Query } from "@nestjs/common"
-import { PostComment } from "@prisma/client"
-import { AsyncBaseResponse } from "src/global/BaseResponse"
 import {
-  CreateCommentDto,
-  CreatePostDto,
-  LikeDto,
-  PostDto,
-  PostFeedDto,
-} from "./post.dto"
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Query,
+  UseGuards,
+} from "@nestjs/common"
+import { AsyncBaseResponse } from "src/global/BaseResponse"
+import { JwtAuthGuard } from "src/jwt/jwt.guard"
+import { CreatePostDto, LikeDto, PostDto } from "./post.dto"
 import { PostService } from "./post.service"
 
+@UseGuards(JwtAuthGuard)
 @Controller("post")
 export class PostController {
   constructor(private readonly postService: PostService) {}
@@ -26,9 +29,7 @@ export class PostController {
   }
 
   @Get("feed")
-  async getFeed(
-    @Query("userId") userId: string,
-  ): AsyncBaseResponse<PostFeedDto[]> {
+  async getFeed(@Query("userId") userId: string): AsyncBaseResponse<PostDto[]> {
     const posts = await this.postService.getFeed(userId)
     return {
       data: posts,
@@ -39,18 +40,16 @@ export class PostController {
     }
   }
 
-  @Post("comment")
-  async createComment(
-    @Body() createCommentDto: CreateCommentDto,
-  ): AsyncBaseResponse<PostComment> {
-    const createdComment = await this.postService.createComment(
-      createCommentDto,
-    )
+  @Get("personal-posts")
+  async getUserPosts(
+    @Query("userId") userId: string,
+  ): AsyncBaseResponse<PostDto[]> {
+    const userPosts = await this.postService.getUserPosts(userId)
     return {
-      data: createdComment,
+      data: userPosts,
       validation: {
         message: "",
-        statusCode: HttpStatus.CREATED,
+        statusCode: HttpStatus.OK,
       },
     }
   }
@@ -59,7 +58,7 @@ export class PostController {
   async getPost(
     @Query("postId") postId: string,
     @Query("userId") userId: string,
-  ): AsyncBaseResponse<PostFeedDto> {
+  ): AsyncBaseResponse<PostDto> {
     const post = await this.postService.findPost(postId, userId)
     return {
       data: post,

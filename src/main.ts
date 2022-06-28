@@ -1,10 +1,12 @@
+import { ValidationPipe } from "@nestjs/common"
 import { NestFactory } from "@nestjs/core"
 import * as cookieParser from "cookie-parser"
 import helmet from "helmet"
+import { getLocalIPAddress } from "./../ip-config"
 import { AppModule } from "./app.module"
 import { HttpExceptionFilter } from "./exception/HttpExceptionFilter"
+import { LogPipe } from "./pipes/logger.pipe"
 import { PrismaService } from "./prisma/prisma.service"
-const ip = require("ip")
 
 async function bootstrap() {
   const PORT = process.env.PORT || 3000
@@ -15,6 +17,7 @@ async function bootstrap() {
     .useGlobalFilters(new HttpExceptionFilter())
     .use(helmet())
     .use(cookieParser())
+    .useGlobalPipes(new ValidationPipe(), new LogPipe())
     .enableCors({
       origin: "*",
     })
@@ -27,7 +30,7 @@ async function bootstrap() {
   await app.listen(PORT)
   console.log(
     `
-Application started on => http://${ip.address()}:${PORT}/api/v1/
+Application started on => http://${getLocalIPAddress()}:${PORT}/api/v1/
 `,
   )
 }

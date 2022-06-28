@@ -3,23 +3,25 @@ import { ConfigModule } from "@nestjs/config"
 import { PrismaModule } from "src/prisma/prisma.module"
 import { PostModule } from "./resources/Post/post.module"
 import { UserModule } from "./resources/User/user.module"
-
-import { classes } from "@automapper/classes"
-import { AutomapperModule } from "@automapper/nestjs"
 import { CoreModule } from "./jwt/jwt.module"
+import { CommentModule } from "./resources/Comment/comment.module"
+import { GoogleDriveModule } from "./google-drive/google-drive.module"
+import { CategoryModule } from "./resources/Category/category.module"
+import { ContinentModule } from "./resources/Continent/continent.module"
 // this is the entry point
 // if you dont import modules here, you will not be able
 // to use them in your application
 @Module({
   imports: [
-    AutomapperModule.forRoot({
-      strategyInitializer: classes(),
-    }),
     ConfigModule.forRoot(),
     PrismaModule,
+    CoreModule,
     PostModule,
     UserModule,
-    CoreModule,
+    CommentModule,
+    GoogleDriveModule,
+    CategoryModule,
+    ContinentModule,
   ],
 })
 export class AppModule {}

@@ -1,76 +1,176 @@
 import { HttpStatus, Injectable } from "@nestjs/common"
+import { JwtService } from "@nestjs/jwt"
+import { User } from "@prisma/client"
+import { Response } from "express"
 import { GenericHttpException } from "src/exception/GenericHttpException"
 import { toBase64String } from "src/global/utils"
+import { GoogleDriveService } from "src/google-drive/google-drive.service"
+import { JwtPayload } from "src/jwt/jwt.strategy"
 import { PrismaService } from "src/prisma/prisma.service"
-import { CreateUserDto, UserLoginDto } from "./user.dto"
+import { MAX_FILE_SIZE } from "./user.constants"
+import {
+  CreateUserDto,
+  RetrieveUserDto,
+  UserDto,
+  UserLoginDto,
+} from "./user.dto"
+import { comparePasswords, hashPassword } from "./user.utils"
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly jwtService: JwtService,
+    private readonly googleDriveService: GoogleDriveService,
+  ) {}
 
-  async createUser(user: CreateUserDto) {
-    const isUserCreated = await this.prismaService.user.findUnique({
+  async getAllUsers() {
+    const users = await this.prismaService.user.findMany()
+    return users.map(this.fromModel)
+  }
+
+  async findUser(userDto: RetrieveUserDto) {
+    const userModel = this.fromRetrieveDto(userDto)
+
+    const user = await this.prismaService.user.findFirst({
       where: {
-        email: user.email,
+        email: userModel.email,
+        id: userModel.id,
+        lastName: userModel.lastName,
+        phoneNumber: userModel.phoneNumber,
+        firstName: userModel.firstName,
+        bio: {
+          contains: userModel.bio,
+        },
+      },
+      rejectOnNotFound: () => {
+        throw new GenericHttpException("User not found", HttpStatus.NOT_FOUND)
       },
     })
+    return this.fromModel(user)
+  }
 
-    if (isUserCreated) {
+  async register(user: CreateUserDto) {
+    const isEmailDuplicate = Boolean(
+      await this.prismaService.user.findUnique({
+        where: {
+          email: user.email,
+        },
+      }),
+    )
+
+    if (isEmailDuplicate)
       throw new GenericHttpException(
         "User with this email already exists",
         HttpStatus.BAD_REQUEST,
       )
-    }
+
+    user.password = await hashPassword(user.password)
     const createdUserModel = await this.prismaService.user.create({
-      data: {
-        ...user,
-      },
+      data: user,
     })
-    return {
-      ...createdUserModel,
-      image: null,
-    }
+    return this.fromModel(createdUserModel)
   }
 
-  async getAllUsers() {
-    const users = await this.prismaService.user.findMany()
-    return users.map((user) => ({ ...user, image: toBase64String(user.image) }))
-  }
-
-  async login(userLogin: UserLoginDto) {
+  login = async (userLogin: UserLoginDto, response: Response) => {
+    const userModel = this.fromLoginDto(userLogin)
     const user = await this.prismaService.user.findFirst({
       where: {
-        AND: {
-          email: {
-            equals: userLogin.email,
-          },
-          password: {
-            equals: userLogin.password,
-          },
+        email: {
+          equals: userModel.email,
         },
+        password: userLogin.isHashed ? userModel.password : undefined,
+      },
+      rejectOnNotFound: () => {
+        throw new GenericHttpException(
+          "Email/password invalid",
+          HttpStatus.NOT_FOUND,
+        )
       },
     })
 
-    if (!user) {
+    if (
+      !userLogin.isHashed &&
+      !(await comparePasswords(userModel.password, user.password))
+    )
       throw new GenericHttpException(
         "Email/password invalid",
         HttpStatus.NOT_FOUND,
       )
+
+    const userDto = this.fromModel(user)
+    const payload: JwtPayload = {
+      email: userDto.email,
+      password: userDto.password,
+      sub: user.id,
+      exp: -1,
+      iat: Date.now(),
     }
 
-    return { ...user, image: toBase64String(user.image) }
+    const jwtToken = await this.jwtService.signAsync(payload)
+    response.cookie(process.env.JWT_COOKIE_NAME, jwtToken, {
+      httpOnly: true,
+      sameSite: "none",
+    })
+    response.status(HttpStatus.OK)
+    return userDto
+  }
+
+  logout = async (response: Response): Promise<boolean> => {
+    response.clearCookie(process.env.JWT_COOKIE_NAME)
+    response.status(HttpStatus.OK)
+    return true
   }
 
   uploadImage = async (file: Express.Multer.File, userId: string) => {
+    if (file.size > MAX_FILE_SIZE)
+      throw new GenericHttpException("Max size is 2MB", HttpStatus.BAD_REQUEST)
+
+    const userDto = await this.findUser({ id: userId })
+
+    if (userDto.image) await this.googleDriveService.updateFile(file)
     await this.prismaService.user.update({
       where: {
         id: userId,
       },
       data: {
-        image: file.buffer,
+        image: "",
       },
     })
-
     return "Image uploaded successfully"
+  }
+
+  // ************ UTILITY METHODS ************ //
+  fromLoginDto = (userLoginDto: UserLoginDto): User => {
+    return {
+      email: userLoginDto.email,
+      password: userLoginDto.password,
+      bio: undefined,
+      firstName: undefined,
+      id: undefined,
+      imageId: undefined,
+      lastName: undefined,
+      phoneNumber: undefined,
+    }
+  }
+
+  fromRetrieveDto = (userDto: RetrieveUserDto): User => {
+    return {
+      bio: userDto.bio,
+      email: userDto.email,
+      firstName: userDto.firstName,
+      lastName: userDto.lastName,
+      phoneNumber: userDto.phoneNumber,
+      id: userDto.id,
+      imageId: undefined,
+      password: undefined,
+    }
+  }
+
+  fromModel(user: User): UserDto {
+    return {
+      ...user,
+      image: toBase64String(user.image),
+    }
   }
 }
