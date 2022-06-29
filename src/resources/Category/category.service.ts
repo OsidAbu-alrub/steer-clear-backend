@@ -12,12 +12,17 @@ import {
 export class CategoryService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  retrieve = async (
-    retrieveCategoryDto: RetrieveCategoryDto = {},
-  ): Promise<Array<CategoryDto>> => {
+  retrieve = async ({
+    include,
+    ...retrieveCategoryDto
+  }: RetrieveCategoryDto = {}): Promise<Array<CategoryDto>> => {
     const categoryModel = this.fromRetrieveDto(retrieveCategoryDto)
     const categories = await this.prismaService.category.findMany({
       where: categoryModel,
+      include,
+      orderBy: {
+        title: "asc",
+      },
     })
     return categories.map(this.fromModel)
   }
@@ -42,19 +47,21 @@ export class CategoryService {
   create = async (
     createCategoryDto: CreateCategoryDto,
   ): Promise<CategoryDto> => {
-    const isDuplicateTitle = Boolean(
-      await this.retrieveFirst({
-        title: createCategoryDto.title,
+    const categoryModel = this.fromCreateDto(createCategoryDto)
+    const isDuplicateCategory = Boolean(
+      await this.prismaService.category.findUnique({
+        where: {
+          title: categoryModel.title,
+        },
       }),
     )
 
-    if (isDuplicateTitle)
+    if (isDuplicateCategory)
       throw new GenericHttpException(
         "Category with this title already exists",
         HttpStatus.BAD_REQUEST,
       )
 
-    const categoryModel = this.fromCreateDto(createCategoryDto)
     const category = await this.prismaService.category.create({
       data: categoryModel,
     })
@@ -65,7 +72,7 @@ export class CategoryService {
   private fromCreateDto = (createCategoryDto: CreateCategoryDto): Category => {
     return {
       id: undefined,
-      title: createCategoryDto.title,
+      title: createCategoryDto.name,
       description: createCategoryDto.description,
     }
   }
@@ -75,14 +82,14 @@ export class CategoryService {
     return {
       description: retrieveCategoryDto.description,
       id: retrieveCategoryDto.id,
-      title: retrieveCategoryDto.title,
+      title: retrieveCategoryDto.name,
     }
   }
   private fromModel = (category: Category): CategoryDto => {
     return {
       description: category.description,
       id: category.id,
-      title: category.title,
+      name: category.title,
     }
   }
 }

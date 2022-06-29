@@ -18,6 +18,9 @@ export class ContinentService {
     const continentModel = this.fromRetrieveDto(retrieveContinentDto)
     const continents = await this.prismaService.continent.findMany({
       where: continentModel,
+      orderBy: {
+        name: "asc",
+      },
     })
     return continents.map(this.fromModel)
   }

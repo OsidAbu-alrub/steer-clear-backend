@@ -1,10 +1,16 @@
 import { Product } from "@prisma/client"
 import { HttpStatus, Injectable } from "@nestjs/common"
 import { PrismaService } from "src/prisma/prisma.service"
-import { ProductDto, CreateProductDto, RetrieveProductDto } from "./product.dto"
+import {
+  ProductDto,
+  CreateProductDto,
+  RetrieveProductDto,
+  ProductModelWithContentAndCategory,
+} from "./product.dto"
 import { GoogleDriveService } from "src/google-drive/google-drive.service"
 import { GenericHttpException } from "src/exception/GenericHttpException"
-import { MAX_FILE_SIZE } from "../User/user.constants"
+import { MAX_FILE_SIZE } from "src/global/constants"
+import { BAD_PRODUCT_BADCODE_INITIALS } from "./product.constant"
 
 @Injectable()
 export class ProductService {
@@ -23,12 +29,14 @@ export class ProductService {
     return products.map(this.fromModel)
   }
 
-  retrieveFirst = async (
-    retrieveProductDto: RetrieveProductDto = {},
-  ): Promise<ProductDto> => {
+  retrieveFirst = async ({
+    include,
+    ...retrieveProductDto
+  }: RetrieveProductDto = {}): Promise<ProductDto> => {
     const retrieveProductModel = this.fromRetrieveDto(retrieveProductDto)
     const product = await this.prismaService.product.findFirst({
       where: retrieveProductModel,
+      include,
       rejectOnNotFound: () => {
         throw new GenericHttpException(
           "Product not found",
@@ -45,8 +53,10 @@ export class ProductService {
   ): Promise<ProductDto> => {
     const createProductModel = this.fromCreateDto(createProductDto)
     const isBarcodeDuplicate = Boolean(
-      await this.retrieveFirst({
-        barcode: createProductModel.barcode,
+      await this.prismaService.product.findUnique({
+        where: {
+          barcode: createProductModel.barcode,
+        },
       }),
     )
 
@@ -87,10 +97,10 @@ export class ProductService {
     })
 
     const productImageId = imageId
-      ? await this.googleDriveService.updateFile(file, imageId)
-      : await this.googleDriveService.createFile(file)
+      ? await this.googleDriveService.updateFile(file, imageId, "product_image")
+      : await this.googleDriveService.createFile(file, "product_image")
 
-    await this.prismaService.user.update({
+    await this.prismaService.product.update({
       where: {
         id: productId,
       },
@@ -102,12 +112,17 @@ export class ProductService {
     return productImageId
   }
   /************** UTILITY METHODS **************/
+  private isBadProduct = (productBarcode: string) =>
+    productBarcode.startsWith(BAD_PRODUCT_BADCODE_INITIALS + "")
+
   private fromCreateDto = (createProductDto: CreateProductDto): Product => {
     return {
       barcode: createProductDto.barcode,
       name: createProductDto.name,
       continentId: createProductDto.continentId,
       categoryId: createProductDto.categoryId,
+      uploadedAt: new Date(),
+      uploadedBy: createProductDto.uploadedBy,
       imageId: undefined,
       id: undefined,
     }
@@ -121,10 +136,14 @@ export class ProductService {
       categoryId: retrieveProductDto.categoryId,
       barcode: retrieveProductDto.barcode,
       name: retrieveProductDto.name,
+      uploadedBy: retrieveProductDto.uploadedBy,
+      uploadedAt: undefined,
       imageId: undefined,
     }
   }
-  private fromModel = (product: Product): ProductDto => {
+  private fromModel = (
+    product: ProductModelWithContentAndCategory,
+  ): ProductDto => {
     return {
       barcode: product.barcode,
       categoryId: product.categoryId,
@@ -134,6 +153,22 @@ export class ProductService {
         ? this.googleDriveService.getPublicViewURL(product.imageId)
         : null,
       name: product.name,
+      isBadProduct: this.isBadProduct(product.barcode),
+      uploadedAt: product.uploadedAt,
+      uploadedBy: product.uploadedBy,
+      category: product.category
+        ? {
+            description: product.category?.description,
+            id: product.category?.id,
+            name: product.category?.title,
+          }
+        : undefined,
+      continent: product.continent
+        ? {
+            id: product.continent.id,
+            name: product.continent.name,
+          }
+        : undefined,
     }
   }
 }

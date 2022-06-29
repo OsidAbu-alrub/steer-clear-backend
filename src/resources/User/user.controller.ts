@@ -11,7 +11,7 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express"
 import { Response } from "express"
 import { AsyncBaseResponse } from "src/global/BaseResponse"
-import { MAX_FILE_SIZE } from "./user.constants"
+import { MAX_FILE_SIZE } from "src/global/constants"
 import {
   CreateUserDto,
   RetrieveUserDto,

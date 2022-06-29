@@ -67,7 +67,7 @@ model Category {
   title       String @unique @map("title")
   description String @map("description")
 
-  Product Product[]
+  products Product[]
   @@map("category")
 }
 
@@ -75,6 +75,8 @@ model Product {
   id          String    @id @default(uuid()) @map("id")
   continentId String    @map("continent_id")
   categoryId  String    @map("category_id")
+  uploadedBy  String    @map("uploaded_by")
+  uploadedAt  DateTime  @map("uploaded_at")
   barcode     String    @unique @map("barcode")
   name        String    @map("name")
   imageId     String?   @map("image_id")

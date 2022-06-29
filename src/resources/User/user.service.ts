@@ -3,10 +3,10 @@ import { JwtService } from "@nestjs/jwt"
 import { User } from "@prisma/client"
 import { Response } from "express"
 import { GenericHttpException } from "src/exception/GenericHttpException"
+import { MAX_FILE_SIZE } from "src/global/constants"
 import { GoogleDriveService } from "src/google-drive/google-drive.service"
 import { JwtPayload } from "src/jwt/jwt.strategy"
 import { PrismaService } from "src/prisma/prisma.service"
-import { MAX_FILE_SIZE } from "./user.constants"
 import {
   CreateUserDto,
   RetrieveUserDto,
@@ -136,8 +136,8 @@ export class UserService {
     })
 
     const userImageId = imageId
-      ? await this.googleDriveService.updateFile(file, imageId)
-      : await this.googleDriveService.createFile(file)
+      ? await this.googleDriveService.updateFile(file, imageId, "user_image")
+      : await this.googleDriveService.createFile(file, "user_image")
 
     await this.prismaService.user.update({
       where: {

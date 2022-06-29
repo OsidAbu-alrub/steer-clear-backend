@@ -1,14 +1,21 @@
-import { Body, Controller, Delete, HttpStatus, Post, Put } from "@nestjs/common"
-import { AsyncBaseResponse } from "src/global/BaseResponse"
-import { ApiTags, ApiResponse } from "@nestjs/swagger"
 import {
-  ProductDto,
-  UpdateProductDto,
-  CreateProductDto,
-  RetrieveProductDto,
-} from "./product.dto"
+  Body,
+  Controller,
+  HttpStatus,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from "@nestjs/common"
+import { FileInterceptor } from "@nestjs/platform-express"
+import { ApiResponse, ApiTags } from "@nestjs/swagger"
+import { AsyncBaseResponse } from "src/global/BaseResponse"
+import { MAX_FILE_SIZE } from "src/global/constants"
+import { JwtAuthGuard } from "src/jwt/jwt.guard"
+import { ProductDto, RetrieveProductDto } from "./product.dto"
 import { ProductService } from "./product.service"
 
+@UseGuards(JwtAuthGuard)
 @ApiTags("Product")
 @Controller("product")
 export class ProductController {
@@ -77,62 +84,25 @@ export class ProductController {
     description: "Product created successfully",
   })
   @Post("create")
+  @UseInterceptors(
+    FileInterceptor("image", {
+      limits: { fieldSize: MAX_FILE_SIZE },
+    }),
+  )
   async create(
-    @Body() createProductDto: CreateProductDto,
+    @Body("extraData") createProductDto: string,
+    @UploadedFile() image: Express.Multer.File,
   ): AsyncBaseResponse<ProductDto> {
-    const createdProduct = await this.productService.create(createProductDto)
+    const createdProduct = await this.productService.create(
+      image,
+      JSON.parse(createProductDto),
+    )
     return {
       validation: {
         message: "",
         statusCode: HttpStatus.CREATED,
       },
       data: createdProduct,
-    }
-  }
-
-  /**
-   * update existing Product
-   *
-   * @param updatedProductDto - Product with updated attributes
-   * @returns updatedProduct - the updated Product
-   */
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: "Product updated successfully",
-  })
-  @Put("update")
-  async update(
-    @Body() updatedProductDto: UpdateProductDto,
-  ): AsyncBaseResponse<ProductDto> {
-    const updatedProduct = await this.productService.update(updatedProductDto)
-    return {
-      validation: {
-        message: "",
-        statusCode: HttpStatus.OK,
-      },
-      data: updatedProduct,
-    }
-  }
-
-  /**
-   * delete Product from database
-   *
-   * @param productDto - the Product to be deleted
-   * @returns deletedProduct - the deleted Product
-   */
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: "Product deleted successfully",
-  })
-  @Delete("delete")
-  async delete(@Body() productDto: ProductDto): AsyncBaseResponse<ProductDto> {
-    const deletedProduct = await this.productService.delete(productDto)
-    return {
-      validation: {
-        message: "",
-        statusCode: HttpStatus.OK,
-      },
-      data: deletedProduct,
     }
   }
 }

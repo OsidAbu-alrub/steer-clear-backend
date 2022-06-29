@@ -1,6 +1,12 @@
 import { PartialType } from "@nestjs/swagger"
 
+// use this to get joined
+// tables data
+type IncludeQuery = {}
+
 export class {{pascalCase name}}Dto {}
-export class Retrieve{{pascalCase name}}Dto extends PartialType({{pascalCase name}}Dto) {}
+export class Retrieve{{pascalCase name}}Dto extends PartialType({{pascalCase name}}Dto) {
+	include?:IncludeQuery
+}
 export class Create{{pascalCase name}}Dto{}
 export class Update{{pascalCase name}}Dto{}
