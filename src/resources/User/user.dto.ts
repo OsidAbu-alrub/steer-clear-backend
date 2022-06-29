@@ -1,4 +1,5 @@
 import { ApiProperty, OmitType, PartialType } from "@nestjs/swagger"
+import { Follow } from "@prisma/client"
 import {
   IsDefined,
   IsEmail,
@@ -80,4 +81,22 @@ export class UserLoginDto {
   password: string
   @ApiProperty()
   isHashed: boolean
+}
+
+export class FollowDto {
+  @ApiProperty()
+  id: string
+  @ApiProperty()
+  followerId: string
+  @ApiProperty()
+  followedId: string
+}
+
+export class FollowTransactionDto {
+  @ApiProperty()
+  @IsDefined()
+  followerId: string
+  @ApiProperty()
+  @IsDefined()
+  followedId: string
 }

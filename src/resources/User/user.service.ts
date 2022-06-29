@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
-import { User } from "@prisma/client"
+import { Follow, User } from "@prisma/client"
 import { Response } from "express"
 import { GenericHttpException } from "src/exception/GenericHttpException"
 import { MAX_FILE_SIZE } from "src/global/constants"
@@ -9,6 +9,8 @@ import { JwtPayload } from "src/jwt/jwt.strategy"
 import { PrismaService } from "src/prisma/prisma.service"
 import {
   CreateUserDto,
+  FollowDto,
+  FollowTransactionDto,
   RetrieveUserDto,
   UserDto,
   UserLoginDto,
@@ -150,6 +152,52 @@ export class UserService {
     return userImageId
   }
 
+  follow = async (followTransactionDto: FollowTransactionDto) => {
+    const followModel = this.fromFollowTransactionDto(followTransactionDto)
+    const createdFollow = await this.prismaService.follow.create({
+      data: followModel,
+    })
+    return this.fromFollowModel(createdFollow)
+  }
+
+  unfollow = async (followTransactionDto: FollowTransactionDto) => {
+    const followModel = this.fromFollowTransactionDto(followTransactionDto)
+
+    const { id } = await this.prismaService.follow.findFirst({
+      where: {
+        followedId: followModel.followedId,
+        followerId: followModel.followerId,
+      },
+      rejectOnNotFound: () => {
+        throw new GenericHttpException(
+          "User not followed",
+          HttpStatus.BAD_REQUEST,
+        )
+      },
+    })
+
+    const unfollowedModel = await this.prismaService.follow.delete({
+      where: { id },
+    })
+
+    return this.fromFollowModel(unfollowedModel)
+  }
+
+  followStatus = async (followTransactionDto: FollowTransactionDto) => {
+    const followModel = this.fromFollowTransactionDto(followTransactionDto)
+
+    const isFollowing = Boolean(
+      await this.prismaService.follow.findFirst({
+        where: {
+          followedId: followModel.followedId,
+          followerId: followModel.followerId,
+        },
+      }),
+    )
+
+    return isFollowing
+  }
+
   // ************ UTILITY METHODS ************ //
   fromLoginDto = (userLoginDto: UserLoginDto): User => {
     return {
@@ -189,6 +237,32 @@ export class UserService {
       image: user.imageId
         ? this.googleDriveService.getPublicViewURL(user.imageId)
         : null,
+    }
+  }
+
+  fromFollowDto = (followDto: FollowDto): Follow => {
+    return {
+      followedId: followDto.followedId,
+      followerId: followDto.followerId,
+      id: followDto.id,
+    }
+  }
+
+  fromFollowModel = (follow: Follow): FollowDto => {
+    return {
+      followedId: follow.followedId,
+      followerId: follow.followerId,
+      id: follow.id,
+    }
+  }
+
+  fromFollowTransactionDto = (
+    followTransactionDto: FollowTransactionDto,
+  ): Follow => {
+    return {
+      followedId: followTransactionDto.followedId,
+      followerId: followTransactionDto.followerId,
+      id: undefined,
     }
   }
 }
