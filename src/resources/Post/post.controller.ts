@@ -7,13 +7,14 @@ import {
   Query,
   UseGuards,
 } from "@nestjs/common"
-import { ApiResponse } from "@nestjs/swagger"
+import { ApiResponse, ApiTags } from "@nestjs/swagger"
 import { AsyncBaseResponse } from "src/global/BaseResponse"
 import { JwtAuthGuard } from "src/jwt/jwt.guard"
 import { CreatePostDto, LikeDto, PostDto } from "./post.dto"
 import { PostService } from "./post.service"
 
 @UseGuards(JwtAuthGuard)
+@ApiTags("Post")
 @Controller("post")
 export class PostController {
   constructor(private readonly postService: PostService) {}

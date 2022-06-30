@@ -12,7 +12,11 @@ import { ApiResponse, ApiTags } from "@nestjs/swagger"
 import { AsyncBaseResponse } from "src/global/BaseResponse"
 import { MAX_FILE_SIZE } from "src/global/constants"
 import { JwtAuthGuard } from "src/jwt/jwt.guard"
-import { ProductDto, RetrieveProductDto } from "./product.dto"
+import {
+  CreateProductDtoWithImageId,
+  ProductDto,
+  RetrieveProductDto,
+} from "./product.dto"
 import { ProductService } from "./product.service"
 
 @UseGuards(JwtAuthGuard)
@@ -103,6 +107,23 @@ export class ProductController {
         statusCode: HttpStatus.CREATED,
       },
       data: createdProduct,
+    }
+  }
+
+  // THIS METHOD IS ONLY USED TO FILL DATABASE WITH PRODUCTS
+  @Post("create-many")
+  async createMany(
+    @Body() arrayOfCreateProductDto: CreateProductDtoWithImageId[],
+  ): AsyncBaseResponse<number> {
+    const numberOfCreatedProducts = await this.productService.createMany(
+      arrayOfCreateProductDto,
+    )
+    return {
+      validation: {
+        message: "",
+        statusCode: HttpStatus.CREATED,
+      },
+      data: numberOfCreatedProducts,
     }
   }
 }

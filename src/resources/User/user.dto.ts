@@ -1,5 +1,4 @@
 import { ApiProperty, OmitType, PartialType } from "@nestjs/swagger"
-import { Follow } from "@prisma/client"
 import {
   IsDefined,
   IsEmail,

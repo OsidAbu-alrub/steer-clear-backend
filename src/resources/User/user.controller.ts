@@ -3,13 +3,14 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Param,
   Post,
   Res,
   UploadedFile,
   UseInterceptors,
 } from "@nestjs/common"
 import { FileInterceptor } from "@nestjs/platform-express"
-import { ApiResponse } from "@nestjs/swagger"
+import { ApiResponse, ApiTags } from "@nestjs/swagger"
 import { Response } from "express"
 import { AsyncBaseResponse } from "src/global/BaseResponse"
 import { MAX_FILE_SIZE } from "src/global/constants"
@@ -22,7 +23,7 @@ import {
   UserLoginDto,
 } from "./user.dto"
 import { UserService } from "./user.service"
-
+@ApiTags("User")
 @Controller("user")
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -229,7 +230,7 @@ export class UserController {
   }
 
   /**
-   * Unfollow user
+   * check follow status
    * @param followTransactionDto - follow transaction object
    * @returns isFollowing - Check if user follows user or not
    */
@@ -246,6 +247,29 @@ export class UserController {
     )
     return {
       data: isFollowing,
+      validation: {
+        message: "",
+        statusCode: HttpStatus.OK,
+      },
+    }
+  }
+
+  /**
+   * get followers
+   * @param userId - user id to get followers for
+   * @returns arrayOfFollowers - array of followers
+   */
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "get user followers",
+  })
+  @Get(":userId")
+  async getFollowers(
+    @Param("userId") userId: string,
+  ): AsyncBaseResponse<FollowDto[]> {
+    const followers = await this.userService.getFollowers(userId)
+    return {
+      data: followers,
       validation: {
         message: "",
         statusCode: HttpStatus.OK,

@@ -73,3 +73,30 @@ export class ProductModelWithContentAndCategory {
   category?: Category
   continent?: Continent
 }
+
+export class CreateProductDtoWithImageId {
+  @ApiProperty()
+  @IsDefined()
+  @IsUUID("all")
+  continentId: string
+  @ApiProperty()
+  @IsDefined()
+  @IsUUID("all")
+  categoryId: string
+  @ApiProperty()
+  @IsDefined()
+  @IsString()
+  barcode: string
+  @ApiProperty()
+  @IsDefined()
+  @IsString()
+  name: string
+  @ApiProperty()
+  @IsDefined()
+  @IsString()
+  uploadedBy: string
+  @ApiProperty()
+  @IsDefined()
+  @IsString()
+  imageId: string
+}

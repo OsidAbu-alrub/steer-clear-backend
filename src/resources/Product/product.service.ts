@@ -6,6 +6,7 @@ import {
   CreateProductDto,
   RetrieveProductDto,
   ProductModelWithContentAndCategory,
+  CreateProductDtoWithImageId,
 } from "./product.dto"
 import { GoogleDriveService } from "src/google-drive/google-drive.service"
 import { GenericHttpException } from "src/exception/GenericHttpException"
@@ -111,6 +112,22 @@ export class ProductService {
 
     return productImageId
   }
+
+  // this is only used to fill database with products
+  createMany = async (
+    arrayOfCreateProductDtoWithImageId: CreateProductDtoWithImageId[],
+  ): Promise<number> => {
+    const arrayOfCreateProductModelWithImageId =
+      arrayOfCreateProductDtoWithImageId.map(
+        this.fromCreateProductDtoWithImageId,
+      )
+
+    const { count } = await this.prismaService.product.createMany({
+      data: arrayOfCreateProductModelWithImageId,
+    })
+
+    return count
+  }
   /************** UTILITY METHODS **************/
   private isBadProduct = (productBarcode: string) =>
     productBarcode.startsWith(BAD_PRODUCT_BADCODE_INITIALS + "")
@@ -127,6 +144,7 @@ export class ProductService {
       id: undefined,
     }
   }
+
   private fromRetrieveDto = (
     retrieveProductDto: RetrieveProductDto,
   ): Product => {
@@ -169,6 +187,21 @@ export class ProductService {
             name: product.continent.name,
           }
         : undefined,
+    }
+  }
+
+  private fromCreateProductDtoWithImageId = (
+    createProductDtoWithImageId: CreateProductDtoWithImageId,
+  ): Product => {
+    return {
+      barcode: createProductDtoWithImageId.barcode,
+      name: createProductDtoWithImageId.name,
+      continentId: createProductDtoWithImageId.continentId,
+      categoryId: createProductDtoWithImageId.categoryId,
+      uploadedAt: new Date(),
+      uploadedBy: createProductDtoWithImageId.uploadedBy,
+      imageId: createProductDtoWithImageId.imageId,
+      id: undefined,
     }
   }
 }

@@ -1,11 +1,12 @@
 import { Body, Controller, HttpStatus, Post, UseGuards } from "@nestjs/common"
-import { ApiResponse } from "@nestjs/swagger"
+import { ApiResponse, ApiTags } from "@nestjs/swagger"
 import { AsyncBaseResponse } from "src/global/BaseResponse"
 import { JwtAuthGuard } from "src/jwt/jwt.guard"
 import { CommentDto, CreateCommentDto, RetrieveCommentDto } from "./comment.dto"
 import { CommentService } from "./comment.service"
 
 @UseGuards(JwtAuthGuard)
+@ApiTags("Comment")
 @Controller("comment")
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}

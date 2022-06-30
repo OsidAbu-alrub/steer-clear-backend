@@ -21,6 +21,8 @@ model User {
   likedPosts  PostLike[]
   followers   Follow[]      @relation("follower_user")
   following   Follow[]      @relation("followed_user")
+  campaigns   Campaign[]
+  invitations Invitation[]
 
   @@map("user")
 }
@@ -104,4 +106,27 @@ model Follow {
   followedUser User?  @relation("followed_user", fields: [followedId], references: [id])
 
   @@map("follow")
+}
+
+model Campaign {
+  id           String       @id @default(uuid())
+  userId       String       @map("user_id")
+  title        String
+  body         String
+  createdOn    DateTime     @default(now()) @map("created_on")
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invitiations Invitation[]
+
+  @@index([userId], map: "campaign_user_id_fkey")
+  @@map("campaign")
+}
+
+model Invitation {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  campaignId String   @map("campaign_id")
+  invitee    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@map("invitation")
 }

@@ -198,6 +198,15 @@ export class UserService {
     return isFollowing
   }
 
+  getFollowers = async (userId: string) => {
+    const followers = await this.prismaService.follow.findMany({
+      where: {
+        followedId: userId,
+      },
+    })
+    return followers.map(this.fromFollowModel)
+  }
+
   // ************ UTILITY METHODS ************ //
   fromLoginDto = (userLoginDto: UserLoginDto): User => {
     return {

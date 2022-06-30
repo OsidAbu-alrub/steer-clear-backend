@@ -9,6 +9,7 @@ import { GoogleDriveModule } from "./google-drive/google-drive.module"
 import { CategoryModule } from "./resources/Category/category.module"
 import { ContinentModule } from "./resources/Continent/continent.module"
 import { ProductModule } from "./resources/Product/product.module"
+import { CampaignModule } from "./resources/Campaign/campaign.module"
 // this is the entry point
 // if you dont import modules here, you will not be able
 // to use them in your application
@@ -24,6 +25,7 @@ import { ProductModule } from "./resources/Product/product.module"
     CategoryModule,
     ContinentModule,
     ProductModule,
+    CampaignModule,
   ],
 })
 export class AppModule {}
