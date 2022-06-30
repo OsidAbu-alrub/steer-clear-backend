@@ -127,7 +127,7 @@ export class CampaignService {
         },
       },
       orderBy: {
-        invitedAt: "asc",
+        invitedAt: "desc",
       },
     })
     return invitations.map(this.fromInvitationModelWithInviterAndCampaign)
