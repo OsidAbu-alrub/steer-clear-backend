@@ -2,6 +2,7 @@ import { ApiProperty, OmitType, PartialType } from "@nestjs/swagger"
 import {
   IsDefined,
   IsEmail,
+  IsNumberString,
   IsString,
   MaxLength,
   MinLength,
@@ -61,6 +62,7 @@ export class CreateUserDto {
   @MinLength(10)
   @MaxLength(10)
   @ApiProperty()
+  @IsNumberString()
   phoneNumber: string
   @IsEmail()
   @ApiProperty()

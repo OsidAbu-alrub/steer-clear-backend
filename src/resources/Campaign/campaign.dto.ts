@@ -63,13 +63,13 @@ export class CreateCampaignDto {
   @ApiProperty()
   @IsDefined()
   @IsString()
-  @MinLength(5)
+  @MinLength(2)
   @MaxLength(100)
   title: string
   @ApiProperty()
   @IsDefined()
   @IsString()
-  @MinLength(5)
+  @MinLength(2)
   @MaxLength(150)
   body: string
 }
