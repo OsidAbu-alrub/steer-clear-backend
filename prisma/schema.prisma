@@ -125,6 +125,7 @@ model Invitation {
   id         String   @id @default(uuid())
   userId     String   @map("user_id")
   campaignId String   @map("campaign_id")
+  invitedAt  DateTime @default(now()) @map("invited_at")
   invitee    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 

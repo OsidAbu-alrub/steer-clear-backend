@@ -1,4 +1,12 @@
-import { Body, Controller, HttpStatus, Post, UseGuards } from "@nestjs/common"
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  UseGuards,
+} from "@nestjs/common"
 import { ApiResponse, ApiTags } from "@nestjs/swagger"
 import { AsyncBaseResponse } from "src/global/BaseResponse"
 import { JwtAuthGuard } from "src/jwt/jwt.guard"
@@ -6,6 +14,7 @@ import {
   CampaignDto,
   CreateCampaignDto,
   CreateInvitationDto,
+  InvitationDto,
   RetrieveCampaignDto,
 } from "./campaign.dto"
 import { CampaignService } from "./campaign.service"
@@ -121,6 +130,30 @@ export class CampaignController {
         statusCode: HttpStatus.CREATED,
       },
       data: numberOfInvitations,
+    }
+  }
+
+  /**
+   * Get user invitations
+   *
+   * @param userId - User to get invitations for
+   * @returns invitations - user invitations
+   */
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: "Campaign created successfully",
+  })
+  @Get(":userId")
+  async getUserInvitations(
+    @Param("userId") userId: string,
+  ): AsyncBaseResponse<InvitationDto[]> {
+    const invitations = await this.campaignService.getInvitations(userId)
+    return {
+      validation: {
+        message: "",
+        statusCode: HttpStatus.CREATED,
+      },
+      data: invitations,
     }
   }
 }

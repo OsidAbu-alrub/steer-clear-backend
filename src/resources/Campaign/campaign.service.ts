@@ -7,6 +7,7 @@ import {
   CreateCampaignDto,
   CreateInvitationDto,
   InvitationDto,
+  InvitationModelWithInviterAndCampaign,
   RetrieveCampaignDto,
 } from "./campaign.dto"
 import { GenericHttpException } from "src/exception/GenericHttpException"
@@ -113,6 +114,25 @@ export class CampaignService {
     return numberOfInvitations
   }
 
+  getInvitations = async (userId: string) => {
+    const invitations = await this.prismaService.invitation.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        campaign: {
+          include: {
+            user: true,
+          },
+        },
+      },
+      orderBy: {
+        invitedAt: "asc",
+      },
+    })
+    return invitations.map(this.fromInvitationModelWithInviterAndCampaign)
+  }
+
   /************** UTILITY METHODS **************/
   private fromCreateDto = (createCampaignDto: CreateCampaignDto): Campaign => {
     return {
@@ -169,6 +189,7 @@ export class CampaignService {
     return {
       campaignId: createInvitationDto.campaignId,
       userId: createInvitationDto.inviterId,
+      invitedAt: new Date(),
       id: undefined,
     }
   }
@@ -180,6 +201,31 @@ export class CampaignService {
       id: invitation.id,
       campaign: undefined,
       invitee: undefined,
+    }
+  }
+
+  private fromInvitationModelWithInviterAndCampaign = (
+    invitation: InvitationModelWithInviterAndCampaign,
+  ): InvitationDto => {
+    return {
+      campaignId: invitation.campaignId,
+      inviteeId: invitation.userId,
+      id: invitation.id,
+      campaign: this.fromModel(invitation.campaign),
+      inviter: {
+        bio: invitation.campaign.user.bio,
+        id: invitation.campaign.user.id,
+        firstName: invitation.campaign.user.firstName,
+        image: invitation.campaign.user.imageId
+          ? this.googleDriveService.getPublicViewURL(
+              invitation.campaign.user.imageId,
+            )
+          : null,
+        email: invitation.campaign.user.email,
+        lastName: invitation.campaign.user.lastName,
+        password: invitation.campaign.user.email,
+        phoneNumber: invitation.campaign.user.phoneNumber,
+      },
     }
   }
 

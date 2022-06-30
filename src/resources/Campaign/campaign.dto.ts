@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger"
-import { Invitation, User } from "@prisma/client"
+import { Campaign, Invitation, User } from "@prisma/client"
 import {
   IsDefined,
   IsString,
@@ -23,7 +23,10 @@ export class InvitationDto {
   inviteeId: string
   @ApiProperty()
   campaignId: string
+  @ApiProperty()
   invitee?: UserDto
+  @ApiProperty()
+  inviter?: UserDto
   campaign?: CampaignDto
 }
 
@@ -35,6 +38,17 @@ export class CreateInvitationDto {
 }
 
 export class RetrieveInviationsDto extends PartialType(InvitationDto) {}
+
+export class InvitationModelWithInviterAndCampaign {
+  @ApiProperty()
+  id: string
+  @ApiProperty()
+  userId: string
+  @ApiProperty()
+  campaignId: string
+  @ApiProperty()
+  campaign: Campaign & { user: User }
+}
 
 export class CampaignDto {
   @ApiProperty()
