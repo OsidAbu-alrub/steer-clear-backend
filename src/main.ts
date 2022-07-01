@@ -1,8 +1,8 @@
 import { ValidationPipe } from "@nestjs/common"
 import { NestFactory } from "@nestjs/core"
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
 import * as cookieParser from "cookie-parser"
 import helmet from "helmet"
-import { getLocalIPAddress } from "./../ip-config"
 import { AppModule } from "./app.module"
 import { HttpExceptionFilter } from "./exception/HttpExceptionFilter"
 import { LogPipe } from "./pipes/logger.pipe"
@@ -22,16 +22,19 @@ async function bootstrap() {
       origin: "*",
     })
 
+  const config = new DocumentBuilder()
+    .setTitle("SteerClear")
+    .setDescription("API Decription")
+    .setVersion("1.0")
+    .build()
+  const document = SwaggerModule.createDocument(app, config)
+  SwaggerModule.setup("api", app, document)
+
   // comment out these two lines if you don't want
   // to connect to a database
   const prismaService = app.get(PrismaService)
   await prismaService.enableShutdownHooks(app)
 
   await app.listen(PORT)
-  console.log(
-    `
-Application started on => http://${getLocalIPAddress()}:${PORT}/api/v1/
-`,
-  )
 }
 bootstrap()

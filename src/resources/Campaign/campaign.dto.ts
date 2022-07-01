@@ -1,12 +1,6 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger"
 import { Campaign, Invitation, User } from "@prisma/client"
-import {
-  IsDefined,
-  IsString,
-  IsUUID,
-  MaxLength,
-  MinLength,
-} from "class-validator"
+import { IsDefined, IsString, IsUUID } from "class-validator"
 import { UserDto } from "../User/user.dto"
 
 // use this to get joined
@@ -77,14 +71,10 @@ export class CreateCampaignDto {
   @ApiProperty()
   @IsDefined()
   @IsString()
-  @MinLength(2)
-  @MaxLength(100)
   title: string
   @ApiProperty()
   @IsDefined()
   @IsString()
-  @MinLength(2)
-  @MaxLength(150)
   body: string
 }
 
